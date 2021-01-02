@@ -76,6 +76,7 @@ function onRecvJsonData(data) {
   var tabs = JSON.parse(data) 
   var arr = [];
   var text
+  print("[info] recv tabs len: " + tabs.length);
 
   tabs.map(function (tab) {
   	if (tab.status == "loading") {
@@ -104,15 +105,17 @@ http.createServer((request, response) => {
   request.on('end', () => {
   	onRecvJsonData(data)
   })
-  print("[info] http server start listen: " + port);
 }).listen(port);
 
-
+print("")
+print("")
 print("-------------------------")
 print("-- start", get_time_id())
 print("-------------------------")
-
+print("")
+print("")
 print("[info] log save to " + log_folder);
+print("[info] listen port: " + port);
 
 
 
