@@ -1,0 +1,46 @@
+
+
+.page-layout {
+  display: block; 
+
+}
+
+.page {
+  display: inline-block; 
+  font-size: 13px;
+  position: relative; 
+  word-break: break-all; 
+  padding: 4px;
+  padding-left: 40px; 
+}
+
+.page img {
+  position: absolute; 
+  top: 8px;
+  left: 24px; 
+  width: 16px; 
+  height: 16px; 
+  cursor: pointer;
+}
+
+.page a {
+  font-size: 13px;
+  color: #234da7;
+  padding-right: 16px; 
+  text-decoration: none;
+}
+
+
+
+input {
+  font-size: 1.2em; 
+  padding: 0.2em; 
+  border: none ;
+  user-select: none;          
+  color: rgba(255, 255, 255, 0);  
+}
+
+#svg-save-icon,
+#svg-copy-icon {
+   fill: white;
+}

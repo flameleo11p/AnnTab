@@ -11,6 +11,9 @@
 
 	<link rel="stylesheet" type="text/css" href="css/style.css">
 	<link rel="stylesheet" type="text/css" href="css/menu.css">
+	<link rel="stylesheet" type="text/css" href="css/tabs.css">
+
+	<link rel="stylesheet" type="text/css" href="css/copy-tooltip.css">
 
 	<title>meTabs results</title>
 </head>
@@ -18,17 +21,19 @@
 <body>
 	<div class="menu-wrap">
 		<input type="checkbox" class="toggler">
+
 		<div class="hamburger">
 			<div></div>
 		</div>
+
 		<div class="menu">
 			<div>
 				<div>
 					<ul>
-						<li><a href="#">Home</a></li>
-						<li><a href="#">About</a></li>
-						<li><a href="#">Services</a></li>
-						<li><a href="#">Contact</a></li>
+						<li><a class="btn" href="#">Home</a></li>
+						<li><a class="btn" href="#">About</a></li>
+						<li><a class="btn" href="#">Services</a></li>
+						<li><a class="btn" href="#">Contact</a></li>
 
 
 					</ul>
@@ -39,20 +44,49 @@
 		</div>
 	</div>
 
-	<div class="showcase">
-		<div class="container showcase-inner">
-			<h1>Welcome</h1>
-			<p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Totam, minima nisi recusandae perferendis ab
-				veritatis neque architecto hic nobis a!</p>
-			<a href="#" class="btn">Read More</a>
+	<div class="header">
+		<div class="header-inner">
+
+			<button id="copy_all" class="btn">
+				<svg class="octicon octicon-clippy" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true">
+					<path id="svg-copy-icon" fill-rule="evenodd"
+						d="M5.75 1a.75.75 0 00-.75.75v3c0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75v-3a.75.75 0 00-.75-.75h-4.5zm.75 3V2.5h3V4h-3zm-2.874-.467a.75.75 0 00-.752-1.298A1.75 1.75 0 002 3.75v9.5c0 .966.784 1.75 1.75 1.75h8.5A1.75 1.75 0 0014 13.25v-9.5a1.75 1.75 0 00-.874-1.515.75.75 0 10-.752 1.298.25.25 0 01.126.217v9.5a.25.25 0 01-.25.25h-8.5a.25.25 0 01-.25-.25v-9.5a.25.25 0 01.126-.217z">
+					</path>
+				</svg>
+				copy
+			</button>
+			<button id="btn_save" class="btn">
+				<svg class="octicon octicon-file-zip mr-3" viewBox="0 0 16 16" version="1.1" width="16" height="16"
+					aria-hidden="true">
+					<path id="svg-save-icon" fill-rule="evenodd"
+						d="M3.5 1.75a.25.25 0 01.25-.25h3a.75.75 0 000 1.5h.5a.75.75 0 000-1.5h2.086a.25.25 0 01.177.073l2.914 2.914a.25.25 0 01.073.177v8.586a.25.25 0 01-.25.25h-.5a.75.75 0 000 1.5h.5A1.75 1.75 0 0014 13.25V4.664c0-.464-.184-.909-.513-1.237L10.573.513A1.75 1.75 0 009.336 0H3.75A1.75 1.75 0 002 1.75v11.5c0 .649.353 1.214.874 1.515a.75.75 0 10.752-1.298.25.25 0 01-.126-.217V1.75zM8.75 3a.75.75 0 000 1.5h.5a.75.75 0 000-1.5h-.5zM6 5.25a.75.75 0 01.75-.75h.5a.75.75 0 010 1.5h-.5A.75.75 0 016 5.25zm2 1.5A.75.75 0 018.75 6h.5a.75.75 0 010 1.5h-.5A.75.75 0 018 6.75zm-1.25.75a.75.75 0 000 1.5h.5a.75.75 0 000-1.5h-.5zM8 9.75A.75.75 0 018.75 9h.5a.75.75 0 010 1.5h-.5A.75.75 0 018 9.75zm-.75.75a1.75 1.75 0 00-1.75 1.75v3c0 .414.336.75.75.75h2.5a.75.75 0 00.75-.75v-3a1.75 1.75 0 00-1.75-1.75h-.5zM7 12.25a.25.25 0 01.25-.25h.5a.25.25 0 01.25.25v2.25H7v-2.25z">
+					</path>
+				</svg>
+
+				save
+			</button>
 
 		</div>
-
 	</div>
 
-	<div class="history">
+	<div class="layout">
+		<div id="record" class="history">
+			<!-- 
+			<div class="page">
+				<img src="chrome://favicon/https://www.google.co.jp">
+				<a class="clickable"
+					href="https://www.google.co.jp/search?newwindow=1&amp;ei=VSReX5ytGMHEmAW0urjYDw&amp;q=translate&amp;oq=translate&amp;gs_lcp=CgZwc3ktYWIQAzILCAAQsQMQgwEQkQIyAggAMgIIADICCAAyAggAMgIIADICCAAyBQgAELEDMgIIADICCAA6BQgAEJECOggIABCxAxCDAToHCAAQsQMQQzoKCAAQsQMQgwEQQzoECAAQQ1CpixxY3pYcYJ-ZHGgAcAF4AIABnQSIAe8SkgELMC40LjIuMi4wLjGYAQCgAQGqAQdnd3Mtd2l6wAEB&amp;sclient=psy-ab&amp;ved=0ahUKEwjcq6Dvo-brAhVBIqYKHTQdDvsQ4dUDCA0&amp;uact=5">translate
+					- Google Search&nbsp;</a>
+				<span
+					style="visibility: hidden;">https://www.google.co.jp/search?newwindow=1&ei=VSReX5ytGMHEmAW0urjYDw&q=translate&oq=translate&gs_lcp=CgZwc3ktYWIQAzILCAAQsQMQgwEQkQIyAggAMgIIADICCAAyAggAMgIIADICCAAyBQgAELEDMgIIADICCAA6BQgAEJECOggIABCxAxCDAToHCAAQsQMQQzoKCAAQsQMQgwEQQzoECAAQQ1CpixxY3pYcYJ-ZHGgAcAF4AIABnQSIAe8SkgELMC40LjIuMi4wLjGYAQCgAQGqAQdnd3Mtd2l6wAEB&sclient=psy-ab&ved=0ahUKEwjcq6Dvo-brAhVBIqYKHTQdDvsQ4dUDCA0&uact=5</span>
+				<img src="images/cross.png">
 
+			</div> 
+		-->
+
+		</div>
 	</div>
+
 
 
 

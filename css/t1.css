@@ -1,0 +1,79 @@
+
+.header:before {
+  content: '';
+  /*background: url('../img/code1.jpg') no-repeat center center/cover;*/
+  position: absolute;
+  /*top: 0;*/
+  /*left: 0;*/
+  width: 100%;
+  height: 100%;
+  /*z-index: -1;*/
+}
+
+
+
+.showcase {
+  background-color: var(--primary-color);
+  color: white;
+  height: 100vh;
+  position: relative;
+  
+}
+
+.showcase:before {
+  filter: blur(2px); 
+  content: '';
+  background: url('../img/wlk.jpg') no-repeat center center/cover;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
+
+.showcase .showcase-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  height: 100%;
+}
+
+.showcase h1 {
+  font-size: 4rem;
+}
+
+.showcase p {
+  font-size: 1.3rem;
+}
+
+
+
+.page img{
+  width: 16px; 
+  height: 16px; 
+  cursor: move;
+}
+
+.page input{
+  color: rgba(1, 1, 1, 1);
+  width: 160px; 
+  height: 16px; 
+}
+
+.page span{
+  color: #FFFFFF;
+  /*visibility: hidden;*/
+  width: 160px; 
+  height: 16px;   
+}
+
+input, select, textarea{
+  color: #ff0000;
+}
+
+textarea:focus, input:focus {
+  color: #0000FF;
+}
