@@ -1,33 +1,15 @@
 var print = console.log;
-//获取域名
-var host = window.location.host;
-var domain = document.domain;
-var url = window.location.href;
-var title = document.title;
-var origin = window.location.origin;
 
-chrome.runtime.sendMessage({
-  url: url,
-  domain: domain,
-  host: host,
-  title: title,
-  origin: origin,
-})
+window.addEventListener('keydown',function(event){
+	print(9999, chrome.runtime, chrome.runtime.sendMessage)
+	// chrome.runtime.sendMessage({type: 'keydown', event: event}, function(){});  
+  print(111, "recv event", String.fromCharCode(event.keyCode))
+  print(222, "recv event", event, event.isComposing, event.keyCode)
+});
 
+window.addEventListener('keyup',function(event){
+	// chrome.runtime.sendMessage({type: 'keyup', data: event}, function(){});   
+});
 
-// chrome.tabs.getSelected(null, function (tab) {
-//   var id = tab.id;
-//   var url = tab.url;
-
-//   print(222, url, id)
-// });
-
-// setTimeout(function(){ 
-// 	print(1111, window)
-// 	print(2222, document)
-// 	print(3333, window.location.href)
-// 	print(4444, document.URL)	
-// 	print(5555, document.cookie)
-// }, 3000);
 
 

@@ -7,15 +7,16 @@ var gg_clipboard_text = "";
 //----------------------------------------------------------
 // func
 //----------------------------------------------------------
+function is_localhost(hostname) {
+  return hostname === "" || hostname === "localhost" || hostname === "127.0.0.1";
+}
 
 function get_origin(url) {
   if (!url) {
-    return ["origin", "noname"]
+    return ["origin", "host", "hostname"]
   }
   var url = new URL(url)
-  var origin = url.origin;
-  var origin_short = origin.replace(/https?:\/\//i, "")
-  return [origin, origin_short]
+  return [url.origin, url.host, url.hostname]
 }
 
 function resizeInput() {
@@ -47,13 +48,18 @@ function createPage(tab) {
 
     tab.url = tab.url || tab.pendingUrl;
 
-    var [origin, origin_short] = get_origin(tab.url);
-    tab.title = tab.title  || origin_short;
+    var [origin, host, hostname] = get_origin(tab.url);
+    tab.title = tab.title || host;
     // chrome://favicon/https://stackoverflow.com
-    tab.favIconUrl = tab.favIconUrl || ("chrome://favicon/" + origin);
-    
+    if (is_localhost(hostname)) {
+      tab.favIconUrl = tab.favIconUrl || ("chrome://favicon/undefined");
+    } else {
+      tab.favIconUrl = tab.favIconUrl || ("chrome://favicon/" + origin);
+    }
     print(333, "loading-fix", tab)
   }
+  tab.favIconUrl = tab.favIconUrl || ("chrome://favicon/undefined");
+
   
   var div_layout = document.createElement('div');
   div_layout.classList.add('page-layout')
@@ -139,8 +145,18 @@ document.addEventListener('DOMContentLoaded', function () {
     history.appendChild(div);
   });
 
-  print("AllTabs", bg.tabs)
+  print("[info] tabs", bg.tabs)
 })
+
+
+
+
+chrome.runtime.sendMessage({type: 'GET_HISTORY'}, function(res){
+  print(111, 'GET_HISTORY recv res', res)
+});  
+
+
+
 
 /*
 

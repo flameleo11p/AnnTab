@@ -1,5 +1,5 @@
 {
-	"name": "AllTabs",
+	"name": "AnnTab",
 	"version": "1.0",
 	"content_scripts": [
 		{
@@ -13,7 +13,7 @@
 	],
 	"browser_action": {
 		// "default_popup": "popup.html",
-		"default_title": "AllTabs"
+		"default_title": "AnnTab"
 	},
 	"background": {
 		"scripts": [
@@ -21,10 +21,11 @@
 		]
 	},
 	"permissions": [
-		"tabs",
+		"chrome://favicon/",
 		"contextMenus",
 		"activeTab",
-		"chrome://favicon/"
+		"storage",
+		"tabs"
 	],
 	"manifest_version": 2
 }
