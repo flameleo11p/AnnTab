@@ -24,14 +24,23 @@ todo:
 
 add mem cache
 
-1 multiple collection support
+[ok] 1 multiple collection support
   bg.arr_tabs instead bg.tabs
 
-2 add tabs seesion html & css
+[ok] 2 add tabs seesion html & css
   create div tabs_layout by popup.js
 
-3 session header
+[ok] 3 session header
   info & action to open or remove
+
+[ok] add create time
+3.1 fix session create time 1/2/2021, 6:08:00 PM
+  js Date time and unix_timestamp
+  var unix_timestamp = new Date().getTime() / 1000
+  new Date(unix_timestamp * 1000);
+
+* Adjust code structure
+
 
 todo
 4 type ctrl to open without remove session
@@ -40,6 +49,17 @@ todo
   for action Restore all
   whether remove session after open
 
+
+t1 strftime
+// todo
+// create js code simple by %d-%m-%Y %H:%M
+
+------------------
+
+btn_save.onclick = function () {
+  // todo download a text file
+  // var txt = gg_clipboard_text
+}
 
 ------------------
 

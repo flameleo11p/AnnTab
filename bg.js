@@ -169,6 +169,8 @@ function collect_tabs(remove, ...queryTabResults) {
     send_localhost(tabs)
 
     // prepare bg data for create popup.html
+    tabs.createTime = new Date().getTime();
+
     bg.tabs = tabs;
     bg.arr_tabs.push(tabs)
     chrome.tabs.create({ url: 'popup.html' })

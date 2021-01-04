@@ -1,15 +1,168 @@
 
 
-const bg = chrome.extension.getBackgroundPage()
 var print = console.log;
 var gg_clipboard_text = "";
+
+const bg = chrome.extension.getBackgroundPage()
+
+//----------------------------------------------------------
+// tmp : need instead by simple
+//----------------------------------------------------------
+
+
+function strftime(sFormat, date) {
+  if (!(date instanceof Date)) date = new Date();
+  var nDay = date.getDay(),
+    nDate = date.getDate(),
+    nMonth = date.getMonth(),
+    nYear = date.getFullYear(),
+    nHour = date.getHours(),
+    aDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+    aMonths = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+    aDayCount = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334],
+    isLeapYear = function () {
+      return (nYear % 4 === 0 && nYear % 100 !== 0) || nYear % 400 === 0;
+    },
+    getThursday = function () {
+      var target = new Date(date);
+      target.setDate(nDate - ((nDay + 6) % 7) + 3);
+      return target;
+    },
+    zeroPad = function (nNum, nPad) {
+      return ('' + (Math.pow(10, nPad) + nNum)).slice(1);
+    };
+  return sFormat.replace(/%[a-z]/gi, function (sMatch) {
+    return {
+      '%a': aDays[nDay].slice(0, 3),
+      '%A': aDays[nDay],
+      '%b': aMonths[nMonth].slice(0, 3),
+      '%B': aMonths[nMonth],
+      '%c': date.toUTCString(),
+      '%C': Math.floor(nYear / 100),
+      '%d': zeroPad(nDate, 2),
+      '%e': nDate,
+      '%F': date.toISOString().slice(0, 10),
+      '%G': getThursday().getFullYear(),
+      '%g': ('' + getThursday().getFullYear()).slice(2),
+      '%H': zeroPad(nHour, 2),
+      '%I': zeroPad((nHour + 11) % 12 + 1, 2),
+      '%j': zeroPad(aDayCount[nMonth] + nDate + ((nMonth > 1 && isLeapYear()) ? 1 : 0), 3),
+      '%k': '' + nHour,
+      '%l': (nHour + 11) % 12 + 1,
+      '%m': zeroPad(nMonth + 1, 2),
+      '%M': zeroPad(date.getMinutes(), 2),
+      '%p': (nHour < 12) ? 'AM' : 'PM',
+      '%P': (nHour < 12) ? 'am' : 'pm',
+      '%s': Math.round(date.getTime() / 1000),
+      '%S': zeroPad(date.getSeconds(), 2),
+      '%u': nDay || 7,
+      '%V': (function () {
+        var target = getThursday(),
+          n1stThu = target.valueOf();
+        target.setMonth(0, 1);
+        var nJan1 = target.getDay();
+        if (nJan1 !== 4) target.setMonth(0, 1 + ((4 - nJan1) + 7) % 7);
+        return zeroPad(1 + Math.ceil((n1stThu - target) / 604800000), 2);
+      })(),
+      '%w': '' + nDay,
+      '%x': date.toLocaleDateString(),
+      '%X': date.toLocaleTimeString(),
+      '%y': ('' + nYear).slice(2),
+      '%Y': nYear,
+      '%z': date.toTimeString().replace(/.+GMT([+-]\d+).+/, '$1'),
+      '%Z': date.toTimeString().replace(/.+\((.+?)\)$/, '$1')
+    }[sMatch] || sMatch;
+  });
+}
+
 
 //----------------------------------------------------------
 // func
 //----------------------------------------------------------
 
 function createTabs() {
-  // body...
+  var history = document.querySelector('.history');
+  var len = bg.arr_tabs.length;
+
+  bg.arr_tabs.map((i_tabs, i, arr) => {
+    // invert i to x
+    var x = len - 1 - i;
+    var tabs = arr[x];
+    if (tabs["hidden"]) {
+      return
+    }
+
+    // "Created 1/2/2021, 6:08:00 PM");
+    var theTime = new Date(tabs.createTime)
+    var createTimeText = "Created " + (strftime('%d/%m/%Y %H:%M:%S', theTime));
+    print(111, i, x, theTime, createTimeText)
+    print(222, typeof theTime, theTime instanceof Date)
+
+    function inline_hide_tabs_layout() {
+      // correspond bg.arr_tabs[x]
+      tabs["hidden"] = true;
+      hide_div(tabs_layout)
+    }
+
+    var tabs_layout = document.createElement('div');
+    tabs_layout.classList.add('tabs-layout')
+
+    var title_layout = document.createElement('div');
+    title_layout.classList.add('title-layout')
+
+    var title_box1 = document.createElement('div');
+    title_box1.classList.add('title-layout-box1')
+    var infoText = document.createTextNode(get_tabs_intro_text(tabs));
+    title_box1.appendChild(infoText);
+
+    var title_box2 = document.createElement('div');
+    title_box2.classList.add('title-layout-box2')
+
+    var title_time = document.createElement('div');
+    title_time.classList.add('title-layout-box2-time')
+    // var dateText = document.createTextNode("Created 1/2/2021, 6:08:00 PM");
+    // title_time.appendChild(dateText);
+    var dateText = document.createTextNode(createTimeText);
+    title_time.appendChild(dateText);
+
+
+
+    var title_btn1 = document.createElement('div');
+    title_btn1.classList.add('title-layout-box2-action')
+    title_btn1.classList.add('inline-btn')
+    var text = document.createTextNode('Restore all');
+    title_btn1.appendChild(text);
+    title_btn1.onclick = function () {
+      chrome.runtime.sendMessage({ type: 'open_tabs', index: x }, function (res) {
+        inline_hide_tabs_layout()
+      });
+    }
+
+    var title_btn2 = document.createElement('div');
+    title_btn2.classList.add('title-layout-box2-action')
+    title_btn2.classList.add('inline-btn')
+    var text = document.createTextNode('Delete all');
+    title_btn2.appendChild(text);
+    title_btn2.onclick = function () {
+      inline_hide_tabs_layout()
+    }
+
+    title_box2.appendChild(title_time);
+    title_box2.appendChild(title_btn1);
+    title_box2.appendChild(title_btn2);
+    title_layout.appendChild(title_box1);
+    title_layout.appendChild(title_box2);
+    tabs_layout.appendChild(title_layout);
+
+    tabs.map(function (tab) {
+      var page_layout = createPage(tab)
+      tabs_layout.appendChild(page_layout);
+    });
+
+    history.appendChild(tabs_layout);
+  });
+
+  print("[info] arr_tabs", bg.arr_tabs)
 }
 
 function hide_div(div) {
@@ -151,91 +304,11 @@ btn_copy.onclick = function () {
 
 var btn_save = document.getElementById('btn_save');
 btn_save.onclick = function () {
+  // todo download a text file
   // var txt = gg_clipboard_text
-
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-
-
-
-  var history = document.querySelector('.history');
-  var len = bg.arr_tabs.length;
-
-  // todo add separator
-  // for diffent session
-  bg.arr_tabs.map((i_tabs, i, arr) => {
-    // invert i to x
-    var x = len - 1 - i;
-    var tabs = arr[x];
-    if (tabs["hidden"]) {
-      return
-    }
-
-    function inline_hide_tabs_layout() {
-      // correspond bg.arr_tabs[x]
-      tabs["hidden"] = true;
-      hide_div(tabs_layout)
-    }
-
-    var tabs_layout = document.createElement('div');
-    tabs_layout.classList.add('tabs-layout')
-
-    var title_layout = document.createElement('div');
-    title_layout.classList.add('title-layout')
-
-    var title_box1 = document.createElement('div');
-    title_box1.classList.add('title-layout-box1')
-    var infoText = document.createTextNode(get_tabs_intro_text(tabs));
-    title_box1.appendChild(infoText);
-
-    var title_box2 = document.createElement('div');
-    title_box2.classList.add('title-layout-box2')
-
-    var title_time = document.createElement('div');
-    title_time.classList.add('title-layout-box2-time')
-    var dateText = document.createTextNode("Created 1/2/2021, 6:08:00 PM");
-    title_time.appendChild(dateText);
-
-    var title_btn1 = document.createElement('div');
-    title_btn1.classList.add('title-layout-box2-action')
-    title_btn1.classList.add('inline-btn')
-    var text = document.createTextNode('Restore all');
-    title_btn1.appendChild(text);
-    title_btn1.onclick = function () {
-      chrome.runtime.sendMessage({ type: 'open_tabs', index: x }, function (res) {
-        inline_hide_tabs_layout()
-      });
-    }
-
-    var title_btn2 = document.createElement('div');
-    title_btn2.classList.add('title-layout-box2-action')
-    title_btn2.classList.add('inline-btn')
-    var text = document.createTextNode('Delete all');
-    title_btn2.appendChild(text);
-    title_btn2.onclick = function () {
-      inline_hide_tabs_layout()
-    }
-
-    title_box2.appendChild(title_time);
-    title_box2.appendChild(title_btn1);
-    title_box2.appendChild(title_btn2);
-    title_layout.appendChild(title_box1);
-    title_layout.appendChild(title_box2);
-    tabs_layout.appendChild(title_layout);
-
-    tabs.map(function (tab) {
-      var page_layout = createPage(tab)
-      tabs_layout.appendChild(page_layout);
-    });
-
-    history.appendChild(tabs_layout);
-  });
-
-  print("[info] tabs", bg.tabs)
-
-  // TODO move upside to 
-  // fix session create time 1/2/2021, 6:08:00 PM
   createTabs()
 })
 
