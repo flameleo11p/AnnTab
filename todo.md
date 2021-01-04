@@ -1,25 +1,21 @@
-ok:
 
-3 remove tabs
-4 save to log folder
-5 filter chrome setting etc. default tab
+------------------
+2021-01-05 Tuesday
+------------------
 
+1 add cache for filter duplicate collect before
+  a) chrome bg.js 
+  b)backend nodejs server.js
 
+temporarily using plan b
+    server.js
+    const gg_cache = {};
+    get_url_hash
 
+test ok
 
-9 about  tab not complete (loading)
-
-  get origin from pendingurl
-  const url = new URL("blob:https://mozilla.org:443/")
-  console.log(url.origin); // Logs 'https://mozilla.org'
-
-10 about favicon
-   localhost
-   undefined
-
-todo:
-
-
+------------------
+2021-01-04 Monday
 ------------------
 
 add mem cache
@@ -42,17 +38,50 @@ add mem cache
 * Adjust code structure
 
 
-todo
+------------------
+2021-01-03 Sunday
+------------------
+
+3 remove tabs
+4 save to log folder
+5 filter chrome setting etc. default tab
+
+
+
+
+9 about  tab not complete (loading)
+
+  get origin from pendingurl
+  const url = new URL("blob:https://mozilla.org:443/")
+  console.log(url.origin); // Logs 'https://mozilla.org'
+
+10 about favicon
+   localhost
+   undefined
+
+
+------------------
+todo:
+------------------
+
+
+2 commit pm2 config
+  pm2 ls
+  pm2 reload all
+  pm2 start
+  startup sh
+
+3 combine backend log
+  not single session a file
+  but combine multi session
+  to control file size
+
+
 4 type ctrl to open without remove session
 
 5 config
   for action Restore all
   whether remove session after open
-
-
-t1 strftime
-// todo
-// create js code simple by %d-%m-%Y %H:%M
 
 ------------------
 
@@ -70,7 +99,7 @@ btn_save.onclick = function () {
 3  js copy all
   ignore text button or action
 
-4 add cache for filter duplicate collect before
+
 
 ------------------
 
@@ -166,3 +195,17 @@ red failed
 
 load in bg.js
 reload when click
+
+
+
+--------------------------
+-- todo other
+--------------------------
+
+1
+t1 strftime
+// todo
+// create js code simple by %d-%m-%Y %H:%M
+
+2 create language snipets
+

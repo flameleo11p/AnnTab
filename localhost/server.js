@@ -1,21 +1,34 @@
 'use strict';
+//----------------------------------------------------------
+// header
+//----------------------------------------------------------
 
 const fs = require('fs');
 const http = require('http');
 var path = require('path');
-var app_folder = path.dirname(require.main.filename);
+const crypto = require('crypto')
+
 
 var print = console.log;
+
 //----------------------------------------------------------
 // config
 //----------------------------------------------------------
 
+var app_folder = path.dirname(require.main.filename);
 var log_folder = path.join(app_folder, 'log');
 var port = 41069
+
+const gg_cache = {};
 
 //----------------------------------------------------------
 // func
 //----------------------------------------------------------
+
+function get_url_hash(url, method = 'sha1') {
+  return crypto.createHash(method).update(url).digest('hex');
+}
+
 function use_local_datetime() {
   function pad(number) {
     if (number < 10) {
@@ -66,13 +79,8 @@ function get_origin(url) {
 }
 
 function onRecvJsonData(str, tabs) {
-	var id = get_time_id()
-	var filename = id + ".json"
-  var filepath = path.join(log_folder, filename);
-	save(filepath, str, filename)
-
   var arr = [];
-  var text
+  var text, url, hashHex
   print("[info] recv tabs len: " + tabs.length);
 
   tabs.map(function (tab) {
@@ -81,17 +89,31 @@ function onRecvJsonData(str, tabs) {
   		var [origin, origin_short] = get_origin(tab.url);
   		tab.title = tab.title || origin_short;
   	}
-  	// body...
-  	arr.push(tab.title)
-  	arr.push(tab.url)
-  	arr.push("")
+
+
+    url = tab.url
+    hashHex = get_url_hash(url)
+    gg_cache[hashHex] = (gg_cache[hashHex] || 0 ) + 1
+    
+    if (gg_cache[hashHex] <= 1) {
+    	arr.push(tab.title)
+    	arr.push(tab.url)
+    	arr.push("")
+    }
   })
 
-  text = arr.join("\n");
+  if (arr.length > 0) {
+    var id = get_time_id()
 
-  var filename = id + ".md"
-  var filepath = path.join(log_folder, filename);
-	save(filepath, text, filename)
+    var filename = id + ".json"
+    var filepath = path.join(log_folder, filename);
+    save(filepath, str, filename)
+
+    text = arr.join("\n");
+    var filename = id + ".md"
+    var filepath = path.join(log_folder, filename);
+  	save(filepath, text, filename)
+  }
 }
 //----------------------------------------------------------
 // rem
