@@ -1,8 +1,62 @@
+.title-layout {
+  display: block; 
+  padding-left: 20px;
+  padding-bottom: 10px;
+}
 
+.title-layout-box1 {
+  display: inline-block; 
+  font-size: 26px; 
+  font-weight: 300;
+  color: rgb(119, 119, 119);
+  vertical-align: middle;
+}
+
+.title-layout-box2 {
+  display: inline-block; 
+  font-size: 0px; 
+  vertical-align: middle;
+  padding-left: 28px;
+}
+
+.title-layout-box2-time {
+  font-size: 11px; 
+  font-weight: 400;
+  color: rgb(136, 136, 136);
+  padding-top: 0px; 
+  padding-bottom: 2px;
+}
+
+.title-layout-box2-action {
+  display: inline-block; 
+  padding-right: 30px;
+  font-size: 11px; 
+  color: #234da7;
+  text-decoration: none;
+}
+
+.inline-btn {
+  /* display: inline-block; */
+  border: none;
+  color: #234da7;
+  /* text-decoration: none; */
+  transition: opacity 200ms ease-in;
+}
+
+.inline-btn:hover {
+  opacity: 0.8;
+  cursor: pointer;
+  /* border:1px solid red;   */
+}
+
+.tabs-layout {
+  display: block; 
+  padding-left: 0px;
+  padding-bottom: 20px;
+}
 
 .page-layout {
   display: block; 
-
 }
 
 .page {

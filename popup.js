@@ -7,6 +7,21 @@ var gg_clipboard_text = "";
 //----------------------------------------------------------
 // func
 //----------------------------------------------------------
+
+function createTabs() {
+  // body...
+}
+
+function hide_div(div) {
+  div.style.display = 'none'
+  // div.remove()
+}
+
+function get_tabs_intro_text(tabs) {
+  var count = tabs.length
+  return (count == 1) ? "1 tab" : (count + " tabs");
+}
+
 function is_localhost(hostname) {
   return hostname === "" || hostname === "localhost" || hostname === "127.0.0.1";
 }
@@ -25,9 +40,9 @@ function resizeInput() {
 
 function selectText(id) {
   var sel, range;
-  var el = document.getElementById(id); 
+  var el = document.getElementById(id);
   sel = window.getSelection();
-  sel.removeAllRanges(); 
+  sel.removeAllRanges();
   range = document.createRange();
   range.selectNodeContents(el);
   sel.addRange(range);
@@ -36,7 +51,7 @@ function selectText(id) {
 }
 
 function deselectAll() {
-  window.getSelection().removeAllRanges(); 
+  window.getSelection().removeAllRanges();
 
 }
 
@@ -60,7 +75,9 @@ function createPage(tab) {
   }
   tab.favIconUrl = tab.favIconUrl || ("chrome://favicon/undefined");
 
-  
+
+
+
   var div_layout = document.createElement('div');
   div_layout.classList.add('page-layout')
 
@@ -83,7 +100,7 @@ function createPage(tab) {
   a.href = tab.url;
 
   var span = document.createElement('span');
-  var spanText = document.createTextNode(tab.url);   
+  var spanText = document.createTextNode(tab.url);
   span.appendChild(spanText);
 
   var input = document.createElement('input');
@@ -121,7 +138,7 @@ var btn_copy = document.getElementById('copy_all');
 btn_copy.onclick = function () {
   selectText('record')
   document.execCommand('copy');
-  setTimeout(()=>{
+  setTimeout(() => {
     deselectAll()
     document.execCommand('paste');
   }, 500);
@@ -139,36 +156,100 @@ btn_save.onclick = function () {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
+
+
+
   var history = document.querySelector('.history');
-  bg.tabs.map(function (tab) {
-    var div = createPage(tab)
-    history.appendChild(div);
+  var len = bg.arr_tabs.length;
+
+  // todo add separator
+  // for diffent session
+  bg.arr_tabs.map((i_tabs, i, arr) => {
+    // invert i to x
+    var x = len - 1 - i;
+    var tabs = arr[x];
+    if (tabs["hidden"]) {
+      return
+    }
+
+    function inline_hide_tabs_layout() {
+      // correspond bg.arr_tabs[x]
+      tabs["hidden"] = true;
+      hide_div(tabs_layout)
+    }
+
+    var tabs_layout = document.createElement('div');
+    tabs_layout.classList.add('tabs-layout')
+
+    var title_layout = document.createElement('div');
+    title_layout.classList.add('title-layout')
+
+    var title_box1 = document.createElement('div');
+    title_box1.classList.add('title-layout-box1')
+    var infoText = document.createTextNode(get_tabs_intro_text(tabs));
+    title_box1.appendChild(infoText);
+
+    var title_box2 = document.createElement('div');
+    title_box2.classList.add('title-layout-box2')
+
+    var title_time = document.createElement('div');
+    title_time.classList.add('title-layout-box2-time')
+    var dateText = document.createTextNode("Created 1/2/2021, 6:08:00 PM");
+    title_time.appendChild(dateText);
+
+    var title_btn1 = document.createElement('div');
+    title_btn1.classList.add('title-layout-box2-action')
+    title_btn1.classList.add('inline-btn')
+    var text = document.createTextNode('Restore all');
+    title_btn1.appendChild(text);
+    title_btn1.onclick = function () {
+      chrome.runtime.sendMessage({ type: 'open_tabs', index: x }, function (res) {
+        inline_hide_tabs_layout()
+      });
+    }
+
+    var title_btn2 = document.createElement('div');
+    title_btn2.classList.add('title-layout-box2-action')
+    title_btn2.classList.add('inline-btn')
+    var text = document.createTextNode('Delete all');
+    title_btn2.appendChild(text);
+    title_btn2.onclick = function () {
+      inline_hide_tabs_layout()
+    }
+
+    title_box2.appendChild(title_time);
+    title_box2.appendChild(title_btn1);
+    title_box2.appendChild(title_btn2);
+    title_layout.appendChild(title_box1);
+    title_layout.appendChild(title_box2);
+    tabs_layout.appendChild(title_layout);
+
+    tabs.map(function (tab) {
+      var page_layout = createPage(tab)
+      tabs_layout.appendChild(page_layout);
+    });
+
+    history.appendChild(tabs_layout);
   });
 
   print("[info] tabs", bg.tabs)
+
+  // TODO move upside to 
+  // fix session create time 1/2/2021, 6:08:00 PM
+  createTabs()
 })
 
 
 
 
-chrome.runtime.sendMessage({type: 'GET_HISTORY'}, function(res){
+chrome.runtime.sendMessage({ type: 'GET_HISTORY' }, function (res) {
   print(111, 'GET_HISTORY recv res', res)
-});  
+});
 
 
 
 
 /*
-
-<div class="page">
-  <img src="chrome://favicon/https://www.google.co.jp">
-  <a class="clickable"
-    href="https://www.google.co.jp/search?newwindow=1&amp;ei=VSReX5ytGMHEmAW0urjYDw&amp;q=translate&amp;oq=translate&amp;gs_lcp=CgZwc3ktYWIQAzILCAAQsQMQgwEQkQIyAggAMgIIADICCAAyAggAMgIIADICCAAyBQgAELEDMgIIADICCAA6BQgAEJECOggIABCxAxCDAToHCAAQsQMQQzoKCAAQsQMQgwEQQzoECAAQQ1CpixxY3pYcYJ-ZHGgAcAF4AIABnQSIAe8SkgELMC40LjIuMi4wLjGYAQCgAQGqAQdnd3Mtd2l6wAEB&amp;sclient=psy-ab&amp;ved=0ahUKEwjcq6Dvo-brAhVBIqYKHTQdDvsQ4dUDCA0&amp;uact=5">translate
-    - Google Search&nbsp;</a>
-  <span style="visibility: hidden;">https://www.google.co.jp/search?newwindow=1&ei=VSReX5ytGMHEmAW0urjYDw&q=translate&oq=translate&gs_lcp=CgZwc3ktYWIQAzILCAAQsQMQgwEQkQIyAggAMgIIADICCAAyAggAMgIIADICCAAyBQgAELEDMgIIADICCAA6BQgAEJECOggIABCxAxCDAToHCAAQsQMQQzoKCAAQsQMQgwEQQzoECAAQQ1CpixxY3pYcYJ-ZHGgAcAF4AIABnQSIAe8SkgELMC40LjIuMi4wLjGYAQCgAQGqAQdnd3Mtd2l6wAEB&sclient=psy-ab&ved=0ahUKEwjcq6Dvo-brAhVBIqYKHTQdDvsQ4dUDCA0&uact=5</span>
-  <img src="images/cross.png">
-  <input id="input-url"
-    value="https://www.google.co.jp/search?newwindow=1&ei=VSReX5ytGMHEmAW0urjYDw&q=translate&oq=translate&gs_lcp=CgZwc3ktYWIQAzILCAAQsQMQgwEQkQIyAggAMgIIADICCAAyAggAMgIIADICCAAyBQgAELEDMgIIADICCAA6BQgAEJECOggIABCxAxCDAToHCAAQsQMQQzoKCAAQsQMQgwEQQzoECAAQQ1CpixxY3pYcYJ-ZHGgAcAF4AIABnQSIAe8SkgELMC40LjIuMi4wLjGYAQCgAQGqAQdnd3Mtd2l6wAEB&sclient=psy-ab&ved=0ahUKEwjcq6Dvo-brAhVBIqYKHTQdDvsQ4dUDCA0&uact=5">
-</div>
+id="copy_all"
 
 */

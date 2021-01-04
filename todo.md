@@ -19,6 +19,41 @@ ok:
 
 todo:
 
+
+------------------
+
+add mem cache
+
+1 multiple collection support
+  bg.arr_tabs instead bg.tabs
+
+2 add tabs seesion html & css
+  create div tabs_layout by popup.js
+
+3 session header
+  info & action to open or remove
+
+todo
+4 type ctrl to open without remove session
+
+5 config
+  for action Restore all
+  whether remove session after open
+
+
+------------------
+
+
+2 add local save
+  local web storage cache
+
+3  js copy all
+  ignore text button or action
+
+4 add cache for filter duplicate collect before
+
+------------------
+
 1 record google search -
   for user checking tabs info
 

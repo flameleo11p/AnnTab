@@ -4,6 +4,7 @@ var print = console.log;
 var bg = window;
 bg.arr_page = [];
 bg.tabs = [];
+bg.arr_tabs = [];
 
 //----------------------------------------------------------
 // rem
@@ -167,8 +168,9 @@ function collect_tabs(remove, ...queryTabResults) {
     // send to backend for save log file
     send_localhost(tabs)
 
-    // create popup
+    // prepare bg data for create popup.html
     bg.tabs = tabs;
+    bg.arr_tabs.push(tabs)
     chrome.tabs.create({ url: 'popup.html' })
 
     if (remove) {
@@ -273,14 +275,27 @@ chrome.contextMenus.create({
   }
 });
 
-function dispatch_event(event) {
+
+function open_tabs(tab_group_index) {
+  var tabs = bg.arr_tabs[tab_group_index]
+  tabs.map(function (tab) {
+    if (tab.status == "loading") {
+      tab.url = tab.url || tab.pendingUrl;
+    }
+    chrome.tabs.create({ url: tab.url })
+  })
+}
+
+function dispatch_event(event, sender, sendResponse) {
   switch(event.type){
+
+    case 'open_tabs':
+      open_tabs(event.index);
+      sendResponse({})
+      break;
     case 'GET_HISTORY':
-        ctrlPressed = true;
-        break;
-    // case 'altPressed':
-    //     altPressed = true;
-    //     break;
+      ctrlPressed = true;
+      break;
     // case 'keyup':
     //     ctrlPressed = false;
     //     altPressed = false;
@@ -296,12 +311,6 @@ function dispatch_event(event) {
 
 chrome.runtime.onMessage.addListener(
   function(event, sender, sendResponse){
-
-    dispatch_event(event) 
-    print(111 , event)
-    print(222, sender, sendResponse)
-  // print(111, "recv event", event.type, event.data)
-  // print(222, "recv event", event.data.isComposing, event.data.keyCode)
-
+    dispatch_event(event, sender, sendResponse) 
   }
 ); 
