@@ -236,7 +236,7 @@ chrome.contextMenus.create({
 });
 
 chrome.contextMenus.create({
-  "title":"Close other tabs",
+  "title":"Close others",
   "contexts":["browser_action"],
   "onclick":function(info, tab) {
     collect_others() 

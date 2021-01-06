@@ -38,6 +38,10 @@ add mem cache
 * Adjust code structure
 
 
+
+2 create language snipets
+ok
+
 ------------------
 2021-01-03 Sunday
 ------------------
@@ -63,6 +67,14 @@ add mem cache
 ------------------
 todo:
 ------------------
+
+1
+t1 strftime
+// todo
+// create js code simple by %d-%m-%Y %H:%M
+
+2 change icons
+  change name
 
 
 2 commit pm2 config
@@ -201,11 +213,3 @@ reload when click
 --------------------------
 -- todo other
 --------------------------
-
-1
-t1 strftime
-// todo
-// create js code simple by %d-%m-%Y %H:%M
-
-2 create language snipets
-
