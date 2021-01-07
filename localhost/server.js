@@ -170,6 +170,28 @@ function getFilesizeInBytes(filename) {
   return fileSizeInBytes;
 }
 
+function is_need_backup(filename) {
+  if (fs.existsSync(filename)) {
+    var fileSizeInBytes = getFilesizeInBytes(filename)
+    if (fileSizeInBytes > txt_maxsize_64K) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function get_backup_name(filename) {
+  var newname = ""
+  var max = parseInt('ffffffff', 16);
+  for (var i = 1; i <= max; i++) {
+    newname = filename + "." +i.toString(16);
+    if (!fs.existsSync(newname)) {
+      return newname
+    }
+  }
+  return filename + ".tmp";
+}
+
 function onRecvJsonData(str, tabs) {
   var arr = [];
   var url, hashHex
@@ -181,7 +203,6 @@ function onRecvJsonData(str, tabs) {
   		var [origin, origin_short] = get_origin(tab.url);
   		tab.title = tab.title || origin_short;
   	}
-
 
     url = tab.url
     hashHex = get_url_hash(url)
@@ -206,10 +227,13 @@ function onRecvJsonData(str, tabs) {
   var id = get_today_id()
   var filename = id + ".md"
   var filepath = path.join(log_folder, filename);
+  var bakpath = ""
+  // check size > 64k
+  if (is_need_backup(filepath)) {
+    bakpath = get_backup_name(filepath)
+    fs.renameSync(filepath, bakpath)
+  }
   save(filepath, text, filename)
-
-  // todo check file > 64k or 1M (diffcult to open search)
-  // split multiple log file
 }
 
 //----------------------------------------------------------

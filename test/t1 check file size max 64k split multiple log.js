@@ -2,6 +2,21 @@
   // todo check file > 64k 
   // split multiple log file
 
+const txt_maxsize_64K = 64 * 1024;
+
+function is_need_backup(path) {
+  if (fs.existsSync(path)) {
+    var fileSizeInBytes = getFilesizeInBytes(filepath)
+    if (fileSizeInBytes > txt_maxsize_64K) {
+      return true;
+    }
+  }
+  return false;
+}
+
+
+
+
 
 
 try {
