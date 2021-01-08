@@ -6,7 +6,7 @@ var gg_clipboard_text = "";
 const bg = chrome.extension.getBackgroundPage()
 
 //----------------------------------------------------------
-// tmp : need instead by simple
+// common: tmp : need instead by simple
 //----------------------------------------------------------
 
 
@@ -75,7 +75,6 @@ function strftime(sFormat, date) {
   });
 }
 
-
 //----------------------------------------------------------
 // func
 //----------------------------------------------------------
@@ -95,8 +94,6 @@ function createTabs() {
     // "Created 1/2/2021, 6:08:00 PM");
     var theTime = new Date(tabs.createTime)
     var createTimeText = "Created " + (strftime('%d/%m/%Y %H:%M:%S', theTime));
-    print(111, i, x, theTime, createTimeText)
-    print(222, typeof theTime, theTime instanceof Date)
 
     function inline_hide_tabs_layout() {
       // correspond bg.arr_tabs[x]
@@ -175,18 +172,6 @@ function get_tabs_intro_text(tabs) {
   return (count == 1) ? "1 tab" : (count + " tabs");
 }
 
-function is_localhost(hostname) {
-  return hostname === "" || hostname === "localhost" || hostname === "127.0.0.1";
-}
-
-function get_origin(url) {
-  if (!url) {
-    return ["origin", "host", "hostname"]
-  }
-  var url = new URL(url)
-  return [url.origin, url.host, url.hostname]
-}
-
 function resizeInput() {
   this.style.width = this.value.length + "ch";
 }
@@ -209,28 +194,6 @@ function deselectAll() {
 }
 
 function createPage(tab) {
-  if (!tab) return;
-
-  if (tab.status == "loading") {
-    print(222, "loading", tab)
-
-    tab.url = tab.url || tab.pendingUrl;
-
-    var [origin, host, hostname] = get_origin(tab.url);
-    tab.title = tab.title || host;
-    // chrome://favicon/https://stackoverflow.com
-    if (is_localhost(hostname)) {
-      tab.favIconUrl = tab.favIconUrl || ("chrome://favicon/undefined");
-    } else {
-      tab.favIconUrl = tab.favIconUrl || ("chrome://favicon/" + origin);
-    }
-    print(333, "loading-fix", tab)
-  }
-  tab.favIconUrl = tab.favIconUrl || ("chrome://favicon/undefined");
-
-
-
-
   var div_layout = document.createElement('div');
   div_layout.classList.add('page-layout')
 
@@ -244,7 +207,6 @@ function createPage(tab) {
   var a_img = document.createElement('a');
   a_img.appendChild(img);
   a_img.href = tab.favIconUrl;
-
 
   var a = document.createElement('a');
   var aText = document.createTextNode(tab.title);
@@ -280,10 +242,11 @@ function createPage(tab) {
   div_layout.appendChild(div);
   return div_layout;
 }
-//----------------------------------------------------------
-// events
-//----------------------------------------------------------
 
+
+//----------------------------------------------------------
+// main
+//----------------------------------------------------------
 
 // todo 
 // SHOW copied tooltips
@@ -313,16 +276,3 @@ document.addEventListener('DOMContentLoaded', function () {
 })
 
 
-
-
-chrome.runtime.sendMessage({ type: 'GET_HISTORY' }, function (res) {
-  print(111, 'GET_HISTORY recv res', res)
-});
-
-
-
-
-/*
-id="copy_all"
-
-*/

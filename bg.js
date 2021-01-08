@@ -40,6 +40,21 @@ var altPressed = false;
 var cfg_KeepTabs = false,
     cfg_IncludeOthers = false;
 
+//----------------------------------------------------------
+// common
+//----------------------------------------------------------
+
+function is_localhost(hostname) {
+  return hostname === "" || hostname === "localhost" || hostname === "127.0.0.1";
+}
+
+function get_origin(url) {
+  if (!url) {
+    return ["origin", "host", "hostname"]
+  }
+  var url = new URL(url)
+  return [url.origin, url.host, url.hostname]
+}
 
 
 //----------------------------------------------------------
@@ -113,19 +128,35 @@ function _P(async_proc) {
   });
 }
 
-function check_tab(tab) {
-  var url = tab.url
-  if (url.startsWith("chrome://")) {
-    return false; 
+function std_tab(tab) {
+  var url, title, favIconUrl
+  if (tab.status == "loading") {
+    tab.url = tab.url || tab.pendingUrl;
+    print("[info] loading-fix", tab)
   }
-  if (url.startsWith("chrome-extension://")) {
-    return false; 
+
+  console.assert(tab.url, "tab.url is nil", tab);
+
+  var [origin, host, hostname] = get_origin(tab.url);
+  tab.title = tab.title || host;
+
+  console.assert(tab.title, "tab.title is nil", tab);
+
+  // chrome://favicon/https://stackoverflow.com
+  if (is_localhost(hostname)) {
+    tab.favIconUrl = tab.favIconUrl || ("chrome://favicon/undefined");
+  } else {
+    tab.favIconUrl = tab.favIconUrl || ("chrome://favicon/" + origin);
   }
-  if (gg_ignore_tab_url.includes(url)) {
-    return false;
+  console.assert(tab.favIconUrl, "tab.favIconUrl is nil", tab);
+
+  return {
+    favIconUrl: tab.favIconUrl,
+    title: tab.title,
+    url: tab.url
   }
-  return true;
 }
+
 
 function check_close_exclude(tab) {
   var url = tab.url
@@ -214,14 +245,18 @@ function get_results(callback, ...queryTabResults) {
 function collect_tabs(remove, ...queryTabResults) {
   get_results((res)=>{
     var tabs = res[0];
-    var tabIds = []
+    var closeIds = []
 
-    tabs = tabs.filter(function (tab) {
+    tabs = tabs.map(function (tab) {
       if (!check_close_exclude(tab)) {
-        tabIds.push(tab.id)
+        closeIds.push(tab.id)
       }
-      return !check_log_exclude(tab);
+      if (check_log_exclude(tab)) {
+        return null;
+      }
+      return std_tab(tab);
     });
+    tabs = tabs.filter((v)=>(!!v))
 
     // send to backend for save log file
     send_localhost(tabs)
@@ -235,7 +270,7 @@ function collect_tabs(remove, ...queryTabResults) {
 
     if (remove) {
       // var tabIds = tabs.map((t)=>t.id)
-      chrome.tabs.remove( tabIds )
+      chrome.tabs.remove( closeIds )
     }
   }, ...queryTabResults)
 }
@@ -368,10 +403,8 @@ self.menus.include_others = chrome.contextMenus.create({
     chrome.storage.local.set({'include_others': checked}, function() {
       print("[info] set include_others: ", checked);
     });
-
   }
 });
-
 
 //----------------------------------------------------------
 // main
