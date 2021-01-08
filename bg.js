@@ -42,7 +42,7 @@ var altPressed = false;
 var cfg_KeepTabs = false,
     cfg_IncludeOthers = false;
 
-var cfg_top10 = 10;
+var cfg_top10 = 30;
 
 //----------------------------------------------------------
 // common

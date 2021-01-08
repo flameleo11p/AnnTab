@@ -79,6 +79,17 @@ function strftime(sFormat, date) {
 // func
 //----------------------------------------------------------
 
+function count_down(fn, sec) {
+  fn(sec)
+  var tm = setInterval(function(){
+    sec--;
+    fn(sec)
+    if (sec <= 0) {
+      clearInterval(tm);
+    }
+  }, 1000);
+}    
+
 function hide_div(div) {
   div.style.display = 'none'
   // div.remove()
@@ -272,6 +283,22 @@ function create_separate_line() {
   history.appendChild(tabs_layout);
 }
 
+// todo init clear history
+function reload_ui() {
+  var count = bg.arr_session.length;
+  var count2 = bg.last_arr_session.length;
+
+  if (count > 0) {
+    create_session(bg.arr_session, "arr_session")
+  }
+
+  if (count2 > 0) {
+    print("[debug] render last_arr_session", count2)
+    create_separate_line()
+    create_session(bg.last_arr_session, "last_arr_session")
+  }
+}
+
 //----------------------------------------------------------
 // main
 //----------------------------------------------------------
@@ -298,16 +325,22 @@ btn_save.onclick = function () {
   window.open("http://www.google.com/");
 }
 
+var cfg_num = 5;
 document.addEventListener('DOMContentLoaded', function () {
-  create_session(bg.arr_session, "arr_session")
+  var count = bg.arr_session.length;
+  var count2 = bg.last_arr_session.length;
 
-  var count = bg.last_arr_session.length
-  if (count > 0) {
-    print("[debug] render last_arr_session", count)
-    create_separate_line()
-    create_session(bg.last_arr_session, "last_arr_session")
+  if (count + count2 > 0) {
+    reload_ui()
+    return;
   }
 
+  count_down(function (sec) {
+    print(sec)
+    if (sec <= 0) {
+      // maybe refresh forever
+      // window.location.reload()
+      reload_ui()
+    }
+  }, cfg_num)
 })
-
-

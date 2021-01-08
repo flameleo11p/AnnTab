@@ -1,5 +1,126 @@
 
 ------------------
+2021-01-08 Friday
+------------------
+
+0 add popup.html
+window.location.reload()
+
+a) if not get history  
+  countdown to refresh
+
+b) notify frondend popup.html result 
+  to refresh when last sessions loaded
+  bg.last_arr_seesion
+
+
+[ok] 1
+fix tab data standard in source bg.js
+
+popup.js 
+remove data changer-fix
++
++func create_session
+      create_separate_line
+
+bg.js
++func std_tab
+
+  std {
+    favIconUrl: tab.favIconUrl,
+    title: tab.title,
+    url: tab.url
+  }
+
+change tabs filter tabs.map().filter((v)=>(!!v))
+
+
+[ok] 2
+
+add last sessions & separate line ()
+
+bg.js
+save last sessions onclick (local storage)
+
+coz Serialization array will lost custorm key 
+must change arr_tabs to arr_session
+
+session = {
+  tabs: tabs,
+  createTime: 8097896768
+}
+
+popup.js
+fix var tabs using
++func
+create_session
+create_separate_line
+
+tabs.css
+add .line for separate_line
+
+
+[ok] 3
+button open session with ctrl, local data save method, open current & last session
+
+i)
+change local data save scene
+when include all or window < 5 
+ii)
+fix bug: open session with bg_key 
+to mapping arr_session or last_arr_session
+iii)
+remove sendMessage open_session
+instead of window.open in popup.js button.onclick
+
+[ok] 
+save&load last top10 & ignore 0 tabs session
+
+c)
+  using save & load keep last top10 session
+  last 20 session
+
+d) [deprecated] 
+  local storage save array by missionKey
+  particle update storage data 
+  when push new session
+  save every push to subkey
+  get and set fix
+  check local save
+  whether can using subkey
+
+
+[ok] 4
+add popup.js
+
+a) hotkey
+result page 
+ctrl+click open tabs dont switch tab  
+b) change button onclick
+window.open
+already default using that style ctrl+click to open new tab
+
+
+
+[ok] 6 
+
+log filter
+close filter
+
+[ok] 7 log json config
+    self.log_exclude_url = data.log_exclude;
+    self.close_exclude_origin = data.close_exclude;
+
+[ok] 10 
+ 
+a)  [deprecated] 
+load menu default checked
+by default json
+
+b) load checked default value by local storage
+
+
+------------------
 2021-01-05 Tuesday
 ------------------
 
@@ -67,6 +188,27 @@ ok
 ------------------
 todo:
 ------------------
+
+
+5 
+get tabs
+by await
+
+8
+load defaults setting
+user setting to override system defaults    
+
+9 load json await
+change function load_setting(callback) 
+to await 
+xhr.open("GET"
+onreadystatechange
+
+11
+restucture code 
+by with init()
+
+
 
 1
 t1 strftime
