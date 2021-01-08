@@ -29,3 +29,8 @@ function is_localhost(hostname) {
 var [origin, host, hostname] = get_origin(url);
 print(111, origin, host, hostname)
 print(222, is_localhost(hostname) )
+
+
+// http://localhost:41070/xcvxcvzxcv
+// 111 'http://localhost:41070' 'localhost:41070' 'localhost'
+// 222 true

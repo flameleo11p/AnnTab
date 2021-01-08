@@ -6,6 +6,9 @@ bg.arr_page = [];
 bg.tabs = [];
 bg.arr_tabs = [];
 
+var self = {}
+
+
 //----------------------------------------------------------
 // rem
 //----------------------------------------------------------
@@ -40,6 +43,35 @@ var cfg_KeepTabs = false,
 //----------------------------------------------------------
 // func
 //----------------------------------------------------------
+
+function parse_json(str) {
+  var data;
+  try {
+    data = JSON.parse(str);
+  } catch(e) {
+    var desc = get_str_head(str)
+    print("[error] JSON.parse:", desc)
+    print(e)
+  }
+  return data;
+}
+
+function load_setting(callback) {
+  var xhr = new XMLHttpRequest();
+  xhr.onreadystatechange = function () {
+    if (xhr.readyState !=4) {
+      // readyState from 1-4 ok
+      // print(xhr.statusText, xhr)
+      return 
+    }
+    var str = xhr.response;
+    var data = parse_json(str)
+    callback(data);
+  }
+  xhr.open("GET", chrome.extension.getURL("/setting.json"), true);
+  xhr.send()
+}
+
 
 function send_localhost(data, contentType='json') {
   var text;
@@ -91,6 +123,30 @@ function check_tab(tab) {
     return false;
   }
   return true;
+}
+
+function check_close_exclude(tab) {
+  var url = tab.url
+  var exclude = self.setting.close_exclude.find((pattern)=>{
+    if (pattern.startsWith('^')) {
+      var rest = pattern.substr(1);
+      return url.startsWith(rest); 
+    }
+    return (url == pattern);
+  })
+  return (!!exclude);
+}
+
+function check_log_exclude(tab) {
+  var url = tab.url
+  var exclude = self.setting.log_exclude.find((pattern)=>{
+    if (pattern.startsWith('^')) {
+      var rest = pattern.substr(1);
+      return url.startsWith(rest); 
+    }
+    return (url == pattern);
+  })
+  return (!!exclude);
 }
 
 function query_tabs(windowType, currentWindow) {
@@ -159,10 +215,10 @@ function collect_tabs(remove, ...queryTabResults) {
     var tabIds = []
 
     tabs = tabs.filter(function (tab) {
-      if (tab.url != "chrome://extensions/") {
+      if (!check_close_exclude(tab)) {
         tabIds.push(tab.id)
       }
-      return check_tab(tab);
+      return !check_log_exclude(tab);
     });
 
     // send to backend for save log file
@@ -202,6 +258,32 @@ function collect_with_alive() {
   collect_tabs(false, invert_query())
 }
 
+function open_tabs(tab_group_index) {
+  var tabs = bg.arr_tabs[tab_group_index]
+  tabs.map(function (tab) {
+    if (tab.status == "loading") {
+      tab.url = tab.url || tab.pendingUrl;
+    }
+    chrome.tabs.create({ url: tab.url })
+  })
+}
+
+function dispatch_event(event, sender, sendResponse) {
+  switch(event.type){
+
+    case 'open_tabs':
+      open_tabs(event.index);
+      sendResponse({})
+      break;
+    case 'GET_HISTORY':
+      ctrlPressed = true;
+      break;
+    // case 'keyup':
+    //     ctrlPressed = false;
+    //     altPressed = false;
+    //     break;
+  }
+}
 
 //----------------------------------------------------------
 // events
@@ -273,42 +355,14 @@ chrome.contextMenus.create({
   "checked": false,  
   "contexts":["browser_action"],
   "onclick":function(info, tab) {
-    cfg_IncludeOthers = info.checked;
+    var checked  = info.checked;
+    cfg_IncludeOthers = checked;
   }
 });
 
 
-function open_tabs(tab_group_index) {
-  var tabs = bg.arr_tabs[tab_group_index]
-  tabs.map(function (tab) {
-    if (tab.status == "loading") {
-      tab.url = tab.url || tab.pendingUrl;
-    }
-    chrome.tabs.create({ url: tab.url })
-  })
-}
-
-function dispatch_event(event, sender, sendResponse) {
-  switch(event.type){
-
-    case 'open_tabs':
-      open_tabs(event.index);
-      sendResponse({})
-      break;
-    case 'GET_HISTORY':
-      ctrlPressed = true;
-      break;
-    // case 'keyup':
-    //     ctrlPressed = false;
-    //     altPressed = false;
-    //     break;
-  }
-}
-
-
-
 //----------------------------------------------------------
-// onMessage
+// on event
 //----------------------------------------------------------
 
 chrome.runtime.onMessage.addListener(
@@ -316,3 +370,13 @@ chrome.runtime.onMessage.addListener(
     dispatch_event(event, sender, sendResponse) 
   }
 ); 
+
+load_setting((data)=>{
+  self.setting = data || {}
+  self.setting.log_exclude = self.setting.log_exclude || []
+  self.setting.close_exclude = self.setting.close_exclude || []
+
+  print("[info] setting.json: ", self.setting)
+})
+
+

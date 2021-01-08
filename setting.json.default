@@ -1,0 +1,20 @@
+{
+	"defaults": {
+	  "keep_tabs": false,
+	  "include_others": false
+	},
+	"log_exclude": [
+	  "https://www.google.com/",
+	  "https://www.youtube.com/",
+	  "chrome://newtab/",
+	  "chrome://settings/",
+	  "chrome://version/",
+	  "chrome://flags/",
+	  "^chrome-extension://",
+	  "chrome://extensions/"
+	],
+	"close_exclude": [
+	  "^chrome://extensions"
+	],
+	"test": 2
+}
