@@ -42,6 +42,8 @@ var altPressed = false;
 var cfg_KeepTabs = false,
     cfg_IncludeOthers = false;
 
+var cfg_top10 = 10;
+
 //----------------------------------------------------------
 // common
 //----------------------------------------------------------
@@ -62,6 +64,21 @@ function get_origin(url) {
 //----------------------------------------------------------
 // func
 //----------------------------------------------------------
+function get_top10_from_2array(arr, arr2, count, inverse) {
+  var len = arr.length
+  if (len >= count) {
+    if (inverse) {
+      return arr.slice(0 - count);
+    }
+    return arr.slice(0, count);
+  }
+
+  var remain = count - len
+  if (inverse) {
+    return arr2.slice(0-remain).concat(arr);
+  }
+  return arr.concat(arr2.slice(0, remain));
+}
 
 function parse_json(str) {
   var data;
@@ -268,30 +285,41 @@ function collect_tabs(remove, ...queryTabResults) {
       createTime: createTime
     }
 
-    tabs.createTime = createTime;
     bg.tabs = tabs;
-    bg.arr_session.push(session)
+    if (tabs.length > 0) {
+      bg.arr_session.push(session)    
+    }
     bg.last_arr_session = bg.last_arr_session || []
-    print("[debug] onClicked: ", bg.last_arr_session)
 
+    // show result popup.html (popup.js)
     chrome.tabs.create({ url: 'popup.html' })
 
+    // close tabs
     if (remove) {
       // var tabIds = tabs.map((t)=>t.id)
       chrome.tabs.remove( closeIds )
     }
 
-    // send to backend for save log file
-    send_localhost(tabs)
+    // save data
+    if (tabs.length > 0) {
+      // send backend's log
+      send_localhost(tabs)
 
-    // todo change to append mode
-    chrome.windows.getAll(function(windows) {
-      if (cfg_IncludeOthers || windows.length < 5) {
-        chrome.storage.local.set({'arr_session': bg.arr_session}, function() {
-          print("[info] save arr_session: ", bg.arr_session);
-        });          
-      }
-    });
+      // save last top10 
+      var inverse = true;
+      var top10 = get_top10_from_2array(bg.arr_session, 
+        bg.last_arr_session, cfg_top10, inverse);
+      
+      chrome.windows.getAll(function(windows) {
+        if (cfg_IncludeOthers || windows.length < 5) {
+          chrome.storage.local.set({'arr_session': top10}, function() {
+            print("[info] save arr_session top10: ", bg.arr_session);
+          });          
+        }
+      });      
+    }
+    print("[debug] onClicked: ", bg.last_arr_session)
+
   }, ...queryTabResults)
 
 }
@@ -440,6 +468,8 @@ chrome.storage.local.get(['keep_tabs', 'include_others'], function(res) {
   });
 });
 
+// todo notify tab to refresh
+// tab of popup.html (after reboot last opened)
 chrome.storage.local.get(['arr_session'], function(res) {
   bg.last_arr_session = res.arr_session || [];
   print("[db] last sessions:", bg.last_arr_session, res)
@@ -452,5 +482,4 @@ load_setting((data)=>{
 
   print("[info] setting.json: ", self.setting)
 })
-
 

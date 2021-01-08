@@ -177,6 +177,9 @@ function create_session(arr_session, bg_key) {
     var tabs = session.tabs;
     var theTime = new Date(session.createTime)
 
+    if (tabs.length <= 0) {
+      return
+    }
     if (session["hidden"]) {
       return
     }
