@@ -8,6 +8,8 @@ bg.arr_tabs = [];
 
 var self = {}
 
+self.menus = {}
+
 
 //----------------------------------------------------------
 // rem
@@ -339,17 +341,22 @@ chrome.contextMenus.create({
   "contexts": ["browser_action"]
 });
 
-chrome.contextMenus.create({
+self.menus.keep_tabs = chrome.contextMenus.create({
   "title":"Keep tab alive",
   "type": "checkbox",
   "checked": false,  
   "contexts":["browser_action"],
   "onclick":function(info, tab) {
-    cfg_KeepTabs = info.checked;
+    var checked  = info.checked;
+    cfg_KeepTabs = checked;
+
+    chrome.storage.local.set({'keep_tabs': checked}, function() {
+      print("[info] set keep_tabs: ", checked);
+    });    
   }
 });
 
-chrome.contextMenus.create({
+self.menus.include_others = chrome.contextMenus.create({
   "title":"Include others",
   "type": "checkbox",
   "checked": false,  
@@ -357,12 +364,17 @@ chrome.contextMenus.create({
   "onclick":function(info, tab) {
     var checked  = info.checked;
     cfg_IncludeOthers = checked;
+
+    chrome.storage.local.set({'include_others': checked}, function() {
+      print("[info] set include_others: ", checked);
+    });
+
   }
 });
 
 
 //----------------------------------------------------------
-// on event
+// main
 //----------------------------------------------------------
 
 chrome.runtime.onMessage.addListener(
@@ -370,6 +382,19 @@ chrome.runtime.onMessage.addListener(
     dispatch_event(event, sender, sendResponse) 
   }
 ); 
+
+chrome.storage.local.get(['keep_tabs', 'include_others'], function(res) {
+  print("[info] local storage:", res)
+  cfg_KeepTabs      = res.keep_tabs;
+  cfg_IncludeOthers = res.include_others;
+
+  chrome.contextMenus.update(self.menus.keep_tabs, {
+    "checked": cfg_KeepTabs
+  });
+  chrome.contextMenus.update(self.menus.include_others, {
+    "checked": cfg_IncludeOthers
+  });
+});
 
 load_setting((data)=>{
   self.setting = data || {}
