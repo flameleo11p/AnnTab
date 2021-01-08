@@ -1,13 +1,15 @@
-
-
 var print = console.log;
+
+
 var bg = window;
-bg.arr_page = [];
 bg.tabs = [];
 bg.arr_tabs = [];
 
-var self = {}
+bg.arr_session = [];
+bg.last_arr_session = [];
 
+
+var self = {}
 self.menus = {}
 
 
@@ -243,6 +245,8 @@ function get_results(callback, ...queryTabResults) {
 // query_tabs_current
 // query_tabs_others
 function collect_tabs(remove, ...queryTabResults) {
+  var createTime = new Date().getTime()
+
   get_results((res)=>{
     var tabs = res[0];
     var closeIds = []
@@ -258,21 +262,38 @@ function collect_tabs(remove, ...queryTabResults) {
     });
     tabs = tabs.filter((v)=>(!!v))
 
-    // send to backend for save log file
-    send_localhost(tabs)
-
     // prepare bg data for create popup.html
-    tabs.createTime = new Date().getTime();
+    var session = {
+      tabs: tabs,
+      createTime: createTime
+    }
 
+    tabs.createTime = createTime;
     bg.tabs = tabs;
-    bg.arr_tabs.push(tabs)
+    bg.arr_session.push(session)
+    // bg.last_arr_session = bg.last_arr_session || []
+
+print("[debug] onClicked: ", bg.last_arr_session)
+
     chrome.tabs.create({ url: 'popup.html' })
 
     if (remove) {
       // var tabIds = tabs.map((t)=>t.id)
       chrome.tabs.remove( closeIds )
     }
+
+    // send to backend for save log file
+    send_localhost(tabs)
+
+    // save last_arr_session
+    // todo change to append mode
+        // bg.arr_session.push(tabs)
+    chrome.storage.local.set({'arr_session': bg.arr_session}, function() {
+      print("[test] update change last_arr_session: ", bg.arr_session);
+    });    
+
   }, ...queryTabResults)
+
 }
 
 function collect_this() {
@@ -295,12 +316,10 @@ function collect_with_alive() {
   collect_tabs(false, invert_query())
 }
 
-function open_tabs(tab_group_index) {
-  var tabs = bg.arr_tabs[tab_group_index]
-  tabs.map(function (tab) {
-    if (tab.status == "loading") {
-      tab.url = tab.url || tab.pendingUrl;
-    }
+function open_session(index) {
+  var session = bg.arr_session[index]
+  print("[debug] open_session", index, session, bg.arr_session)
+  session.tabs.map(function (tab) {
     chrome.tabs.create({ url: tab.url })
   })
 }
@@ -308,8 +327,8 @@ function open_tabs(tab_group_index) {
 function dispatch_event(event, sender, sendResponse) {
   switch(event.type){
 
-    case 'open_tabs':
-      open_tabs(event.index);
+    case 'open_session':
+      open_session(event.index);
       sendResponse({})
       break;
     case 'GET_HISTORY':
@@ -417,7 +436,7 @@ chrome.runtime.onMessage.addListener(
 ); 
 
 chrome.storage.local.get(['keep_tabs', 'include_others'], function(res) {
-  print("[info] local storage:", res)
+  print("[db] menu checked:", res)
   cfg_KeepTabs      = res.keep_tabs;
   cfg_IncludeOthers = res.include_others;
 
@@ -427,6 +446,11 @@ chrome.storage.local.get(['keep_tabs', 'include_others'], function(res) {
   chrome.contextMenus.update(self.menus.include_others, {
     "checked": cfg_IncludeOthers
   });
+});
+
+chrome.storage.local.get(['arr_session'], function(res) {
+  bg.last_arr_session = res.arr_session || [];
+  print("[db] last sessions:", bg.last_arr_session, res)
 });
 
 load_setting((data)=>{

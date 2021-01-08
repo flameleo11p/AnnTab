@@ -79,6 +79,7 @@ function strftime(sFormat, date) {
 // func
 //----------------------------------------------------------
 
+
 function hide_div(div) {
   div.style.display = 'none'
   // div.remove()
@@ -109,7 +110,6 @@ function deselectAll() {
   window.getSelection().removeAllRanges();
 
 }
-
 
 function createPage(tab) {
   var div_layout = document.createElement('div');
@@ -161,39 +161,28 @@ function createPage(tab) {
   return div_layout;
 }
 
-// bg.last_arr_tabs
-// bg.arr_tabs
-function create_session(arr_session, tag) {
-  print("[info]", tag, arr_session)
-  if (!(arr_session && arr_session.length > 0)) {
-    return ;
-  }
 
+function createTabs() {
   var history = document.querySelector('.history');
+  var len = bg.arr_tabs.length;
 
-  var len = arr_session.length;
-  arr_session.map((i_tabs, i, arr) => {
+  bg.arr_tabs.map((i_tabs, i, arr) => {
     // invert i to x
     var x = len - 1 - i;
-    var session = arr[x];
-    var tabs = session.tabs;
-    var theTime = new Date(session.createTime)
-
-    if (session["hidden"]) {
+    var tabs = arr[x];
+    if (tabs["hidden"]) {
       return
     }
 
-    // todo delete from local storage
-    function inline_hide_tabs_layout() {
-      session["hidden"] = true;
-      hide_div(tabs_layout)
-    }
-
-
-    var sz_intro = get_tabs_intro_text(tabs);
     // "Created 1/2/2021, 6:08:00 PM");
+    var theTime = new Date(tabs.createTime)
     var createTimeText = "Created " + (strftime('%d/%m/%Y %H:%M:%S', theTime));
 
+    function inline_hide_tabs_layout() {
+      // correspond bg.arr_tabs[x]
+      tabs["hidden"] = true;
+      hide_div(tabs_layout)
+    }
 
     var tabs_layout = document.createElement('div');
     tabs_layout.classList.add('tabs-layout')
@@ -203,7 +192,7 @@ function create_session(arr_session, tag) {
 
     var title_box1 = document.createElement('div');
     title_box1.classList.add('title-layout-box1')
-    var infoText = document.createTextNode(sz_intro);
+    var infoText = document.createTextNode(get_tabs_intro_text(tabs));
     title_box1.appendChild(infoText);
 
     var title_box2 = document.createElement('div');
@@ -211,9 +200,11 @@ function create_session(arr_session, tag) {
 
     var title_time = document.createElement('div');
     title_time.classList.add('title-layout-box2-time')
-
+    // var dateText = document.createTextNode("Created 1/2/2021, 6:08:00 PM");
+    // title_time.appendChild(dateText);
     var dateText = document.createTextNode(createTimeText);
     title_time.appendChild(dateText);
+
 
 
     var title_btn1 = document.createElement('div');
@@ -222,7 +213,7 @@ function create_session(arr_session, tag) {
     var text = document.createTextNode('Restore all');
     title_btn1.appendChild(text);
     title_btn1.onclick = function () {
-      chrome.runtime.sendMessage({ type: 'open_session', index: x }, function (res) {
+      chrome.runtime.sendMessage({ type: 'open_tabs', index: x }, function (res) {
         inline_hide_tabs_layout()
       });
     }
@@ -251,22 +242,8 @@ function create_session(arr_session, tag) {
     history.appendChild(tabs_layout);
   });
 
-  
+  print("[info] arr_tabs", bg.arr_tabs)
 }
-
-function create_separate_line() {
-  var history = document.querySelector('.history');
-
-  var tabs_layout = document.createElement('div');
-  tabs_layout.classList.add('tabs-layout')
-
-  var line = document.createElement('div');
-  line.classList.add('line')
-
-  tabs_layout.appendChild(line);
-  history.appendChild(tabs_layout);
-}
-
 //----------------------------------------------------------
 // main
 //----------------------------------------------------------
@@ -295,15 +272,7 @@ btn_save.onclick = function () {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-  create_session(bg.arr_session, "arr_session")
-
-  var count = bg.last_arr_session.length
-  if (count > 0) {
-    print("[debug] render last_arr_session", count)
-    create_separate_line()
-    create_session(bg.last_arr_session, "last_arr_session")
-  }
-
+  createTabs()
 })
 
 
