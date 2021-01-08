@@ -84,3 +84,23 @@ function createTabs(arr_tabs) {
 
   print("[info] arr_tabs", arr_tabs)
 }
+
+
+
+function create_separate_line() {
+  var history = document.querySelector('.history');
+  var len = arr_tabs.length;
+
+  var tabs_layout = document.createElement('div');
+  tabs_layout.classList.add('tabs-layout')
+
+  var line_layout = document.createElement('div');
+  line_layout.classList.add('line-layout')
+
+  tabs_layout.appendChild(line_layout);
+  history.appendChild(tabs_layout);
+}
+
+
+
+

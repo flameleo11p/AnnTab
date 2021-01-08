@@ -161,10 +161,8 @@ function createPage(tab) {
   return div_layout;
 }
 
-// bg.last_arr_tabs
-// bg.arr_tabs
-function create_session(arr_session, tag) {
-  print("[info]", tag, arr_session)
+function create_session(arr_session, bg_key) {
+  print("[info]", bg_key, arr_session)
   if (!(arr_session && arr_session.length > 0)) {
     return ;
   }
@@ -183,12 +181,15 @@ function create_session(arr_session, tag) {
       return
     }
 
+    var all_urls = tabs.map(function (tab) {
+      return tab.url;
+    });
+
     // todo delete from local storage
     function inline_hide_tabs_layout() {
       session["hidden"] = true;
       hide_div(tabs_layout)
     }
-
 
     var sz_intro = get_tabs_intro_text(tabs);
     // "Created 1/2/2021, 6:08:00 PM");
@@ -222,9 +223,10 @@ function create_session(arr_session, tag) {
     var text = document.createTextNode('Restore all');
     title_btn1.appendChild(text);
     title_btn1.onclick = function () {
-      chrome.runtime.sendMessage({ type: 'open_session', index: x }, function (res) {
-        inline_hide_tabs_layout()
-      });
+      all_urls.map((url)=>{
+        window.open(url);
+      })
+      inline_hide_tabs_layout()
     }
 
     var title_btn2 = document.createElement('div');
@@ -290,8 +292,7 @@ btn_copy.onclick = function () {
 
 var btn_save = document.getElementById('btn_save');
 btn_save.onclick = function () {
-  // todo download a text file
-  // var txt = gg_clipboard_text
+  window.open("http://www.google.com/");
 }
 
 document.addEventListener('DOMContentLoaded', function () {

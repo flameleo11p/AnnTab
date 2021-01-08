@@ -271,9 +271,8 @@ function collect_tabs(remove, ...queryTabResults) {
     tabs.createTime = createTime;
     bg.tabs = tabs;
     bg.arr_session.push(session)
-    // bg.last_arr_session = bg.last_arr_session || []
-
-print("[debug] onClicked: ", bg.last_arr_session)
+    bg.last_arr_session = bg.last_arr_session || []
+    print("[debug] onClicked: ", bg.last_arr_session)
 
     chrome.tabs.create({ url: 'popup.html' })
 
@@ -285,13 +284,14 @@ print("[debug] onClicked: ", bg.last_arr_session)
     // send to backend for save log file
     send_localhost(tabs)
 
-    // save last_arr_session
     // todo change to append mode
-        // bg.arr_session.push(tabs)
-    chrome.storage.local.set({'arr_session': bg.arr_session}, function() {
-      print("[test] update change last_arr_session: ", bg.arr_session);
-    });    
-
+    chrome.windows.getAll(function(windows) {
+      if (cfg_IncludeOthers || windows.length < 5) {
+        chrome.storage.local.set({'arr_session': bg.arr_session}, function() {
+          print("[info] save arr_session: ", bg.arr_session);
+        });          
+      }
+    });
   }, ...queryTabResults)
 
 }
@@ -316,24 +316,16 @@ function collect_with_alive() {
   collect_tabs(false, invert_query())
 }
 
-function open_session(index) {
-  var session = bg.arr_session[index]
-  print("[debug] open_session", index, session, bg.arr_session)
-  session.tabs.map(function (tab) {
-    chrome.tabs.create({ url: tab.url })
-  })
-}
-
 function dispatch_event(event, sender, sendResponse) {
   switch(event.type){
 
-    case 'open_session':
-      open_session(event.index);
-      sendResponse({})
-      break;
-    case 'GET_HISTORY':
-      ctrlPressed = true;
-      break;
+    // case 'open_session':
+    //   open_session(event.index, event.bg_key);
+    //   sendResponse({})
+    //   break;
+    // case 'GET_HISTORY':
+    //   ctrlPressed = true;
+    //   break;
     // case 'keyup':
     //     ctrlPressed = false;
     //     altPressed = false;
