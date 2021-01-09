@@ -105,7 +105,7 @@
   padding-left: 40px; 
 }
 
-.page-img {
+.page-icon {
   position: absolute; 
   top: 8px;
   left: 24px; 
@@ -114,11 +114,19 @@
   cursor: pointer;
 }
 
-.div-a {
+.div-img {
   display: inline-block; 
   font-size: 13px;
   color: #234da7;
   padding-right: 16px;
+  cursor: pointer;
+}
+
+.div-a {
+  display: inline-block; 
+  font-size: 13px;
+  color: #234da7;
+  width: 900;
   cursor: pointer;
 }
 

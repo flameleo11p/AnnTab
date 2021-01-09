@@ -72,8 +72,8 @@ css\style.css
 manifest.json
 remove 'content.js'
 
-content_scripts config
-
+manifest.json 
+remove permission
 	"content_scripts": [
 		{
 			"matches": [
@@ -87,7 +87,9 @@ content_scripts config
 
 
 
-6
+6 add about.html & intro about kill google analytics injection
 
 README.md
 add comments for remove google analytics injection
+
+add test.html 

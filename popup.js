@@ -135,16 +135,15 @@ function createPage(tab) {
 
   // page img tile url
   var img = document.createElement('img');
-  img.classList.add('page-img')
+  img.classList.add('page-icon')
   img.src = tab.favIconUrl;
 
   var a_img = document.createElement('div');
-  a_img.classList.add('div-a')
+  a_img.classList.add('div-img')
   a_img.classList.add('inline-btn')
   a_img.appendChild(img);
   a_img.onclick = function () {
     window.open(tab.favIconUrl);
-
   }
 
   var a = document.createElement('div');
