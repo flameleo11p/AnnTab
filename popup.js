@@ -81,18 +81,22 @@ function strftime(sFormat, date) {
 
 function count_down(fn, sec) {
   fn(sec)
-  var tm = setInterval(function(){
+  var tm = setInterval(function () {
     sec--;
     fn(sec)
     if (sec <= 0) {
       clearInterval(tm);
     }
   }, 1000);
-}    
+}
 
-function hide_div(div) {
-  div.style.display = 'none'
-  // div.remove()
+function show_div(div, style = 'block') {
+  // p.ex1 { display: none; }
+  // p.ex2 { display: inline; }
+  // p.ex3 { display: block; }
+  // p.ex4 { display: inline - block; }  
+  // https://www.w3schools.com/cssref/pr_class_display.asp
+  div.style.display = style
 }
 
 function get_tabs_intro_text(tabs) {
@@ -129,23 +133,28 @@ function createPage(tab) {
   var div = document.createElement('div');
   div.classList.add('page')
 
+  // page img tile url
   var img = document.createElement('img');
+  img.classList.add('page-img')
   img.src = tab.favIconUrl;
 
-  // var ul = document.createElement('ul');
-  var a_img = document.createElement('a');
+  var a_img = document.createElement('div');
+  a_img.classList.add('div-a')
+  a_img.classList.add('inline-btn')
   a_img.appendChild(img);
-  a_img.href = tab.favIconUrl;
+  a_img.onclick = function () {
+    window.open(tab.favIconUrl);
 
-  var a = document.createElement('a');
-  var aText = document.createTextNode(tab.title);
-  // a.classList.add('btn')
-  a.appendChild(aText);
-  a.href = tab.url;
+  }
 
-  var span = document.createElement('span');
-  var spanText = document.createTextNode(tab.url);
-  span.appendChild(spanText);
+  var a = document.createElement('div');
+  var titleText = document.createTextNode(tab.title);
+  a.classList.add('div-a')
+  a.classList.add('inline-btn')
+  a.appendChild(titleText);
+  a.onclick = function () {
+    window.open(tab.url);
+  }
 
   var input = document.createElement('input');
   input.readOnly = true;
@@ -159,6 +168,7 @@ function createPage(tab) {
     document.execCommand('copy');
   }
 
+  // newline
   var span = document.createElement('span');
   var br = document.createElement('br');
   span.appendChild(br);
@@ -175,7 +185,7 @@ function createPage(tab) {
 function create_session(arr_session, bg_key) {
   print("[info]", bg_key, arr_session)
   if (!(arr_session && arr_session.length > 0)) {
-    return ;
+    return;
   }
 
   var history = document.querySelector('.history');
@@ -202,7 +212,7 @@ function create_session(arr_session, bg_key) {
     // todo delete from local storage
     function inline_hide_tabs_layout() {
       session["hidden"] = true;
-      hide_div(tabs_layout)
+      show_div(tabs_layout, 'none')
     }
 
     var sz_intro = get_tabs_intro_text(tabs);
@@ -237,7 +247,7 @@ function create_session(arr_session, bg_key) {
     var text = document.createTextNode('Restore all');
     title_btn1.appendChild(text);
     title_btn1.onclick = function () {
-      all_urls.map((url)=>{
+      all_urls.map((url) => {
         window.open(url);
       })
       inline_hide_tabs_layout()
@@ -267,7 +277,7 @@ function create_session(arr_session, bg_key) {
     history.appendChild(tabs_layout);
   });
 
-  
+
 }
 
 function create_separate_line() {
@@ -279,14 +289,19 @@ function create_separate_line() {
   var line = document.createElement('div');
   line.classList.add('line')
 
+
+
   tabs_layout.appendChild(line);
   history.appendChild(tabs_layout);
 }
 
 // todo init clear history
-function reload_ui() {
+function reload_tabs() {
   var count = bg.arr_session.length;
   var count2 = bg.last_arr_session.length;
+
+  var tips_layout = document.querySelector('.tips-layout');
+  show_div(tips_layout, 'none')
 
   if (count > 0) {
     create_session(bg.arr_session, "arr_session")
@@ -299,48 +314,102 @@ function reload_ui() {
   }
 }
 
+// Home
+// Setting
+// About
+// Contact
+function init_menu() {
+  var menu_toggler = document.querySelector('.toggler');
+
+  var btn_home = document.querySelector('#menu-btn-home');
+  btn_home.onclick = function () {
+    menu_toggler.checked = false;
+    window.scrollTo(0, 0);
+    // window.scrollTo(0, document.body.scrollHeight);
+    window.open("https://github.com/flameleo11p/AnnTab");
+  }
+
+  var btn_setting = document.querySelector('#menu-btn-setting');
+  btn_setting.onclick = function () {
+    // window.open("/setting.json");
+    // window.open(chrome.extension.getURL("/test"));
+    // window.open("file://"+chrome.extension.getURL("/setting.json"));
+    // window.open("file:///home/me/Downloads/");
+    // chrome.tabs.create({url: "file:///home/me/Downloads/"});
+    chrome.tabs.create({url: "file:///home"});
+
+  }
+
+  var btn_about = document.querySelector('#menu-btn-about');
+  btn_about.onclick = function () {
+    window.open("/about.html");
+    // file:///drive_d/work/chrome_ext/meTabs/test/
+    // chrome-extension://mblimcaofbhaknffgoedcgefjfbahjmp/setting.json
+    // window.open("https://github.com/flameleo11p/AnnTab");
+  }
+
+  var btn_back = document.querySelector('#menu-btn-back');
+  btn_back.onclick = function () {
+    menu_toggler.checked = false;
+  }
+
+
+  // todo 
+  // SHOW copied tooltips
+  var btn_copy = document.getElementById('copy_all');
+  btn_copy.onclick = function () {
+    selectText('record')
+    document.execCommand('copy');
+    setTimeout(() => {
+      deselectAll()
+      document.execCommand('paste');
+    }, 500);
+  }
+
+  // document.addEventListener('paste', function (evt) {
+  //   copied = evt.clipboardData.getData('text/plain');
+  //   print(333, copied)
+  // });
+
+  var btn_save = document.getElementById('btn_save');
+  btn_save.onclick = function () {
+    window.open("http://www.google.com/");
+  }
+
+
+
+}
+
 //----------------------------------------------------------
 // main
 //----------------------------------------------------------
 
-// todo 
-// SHOW copied tooltips
-var btn_copy = document.getElementById('copy_all');
-btn_copy.onclick = function () {
-  selectText('record')
-  document.execCommand('copy');
-  setTimeout(() => {
-    deselectAll()
-    document.execCommand('paste');
-  }, 500);
-}
 
-// document.addEventListener('paste', function (evt) {
-//   copied = evt.clipboardData.getData('text/plain');
-//   print(333, copied)
-// });
-
-var btn_save = document.getElementById('btn_save');
-btn_save.onclick = function () {
-  window.open("http://www.google.com/");
-}
-
-var cfg_num = 5;
 document.addEventListener('DOMContentLoaded', function () {
+  init_menu()
+
   var count = bg.arr_session.length;
   var count2 = bg.last_arr_session.length;
 
   if (count + count2 > 0) {
-    reload_ui()
+    reload_tabs()
     return;
   }
 
+  var tips_layout = document.querySelector('.tips-layout');
+  show_div(tips_layout, 'block')
+
+  var cfg_num = 3;
   count_down(function (sec) {
-    print(sec)
     if (sec <= 0) {
-      // maybe refresh forever
-      // window.location.reload()
-      reload_ui()
+      reload_tabs()
+      return;
     }
+
+    var tips = document.querySelector('.tips-text');
+    var str = tips.getAttribute('FormatText')
+    tips.textContent = str.replace(/%s/, () => sec)
+
+    print(sec)
   }, cfg_num)
 })
