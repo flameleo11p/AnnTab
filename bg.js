@@ -1,21 +1,19 @@
 var print = console.log;
 
 
-var bg = window;
-bg.tabs = [];
-bg.arr_tabs = [];
-
-bg.arr_session = [];
-bg.last_arr_session = [];
-
-
-var self = {}
-self.menus = {}
-
 
 //----------------------------------------------------------
-// rem
+// config
 //----------------------------------------------------------
+
+var ctrlPressed = false;
+var altPressed = false;
+
+// config
+var cfg_KeepTabs = false,
+    cfg_IncludeOthers = false;
+
+var cfg_top10 = 100;
 
 
 // todo match start with
@@ -35,14 +33,16 @@ const gg_ignore_tab_url = [
   "chrome://extensions/"
 ]
 
-var ctrlPressed = false;
-var altPressed = false;
+var bg = window;
+bg.tabs = [];
+// bg.arr_tabs = [];
 
-// config
-var cfg_KeepTabs = false,
-    cfg_IncludeOthers = false;
+bg.arr_session = [];
+bg.last_arr_session = [];
 
-var cfg_top10 = 30;
+
+var self = {}
+self.menus = {}
 
 //----------------------------------------------------------
 // common
@@ -60,10 +60,25 @@ function get_origin(url) {
   return [url.origin, url.host, url.hostname]
 }
 
+function easyhash(str) {
+  var x = 0;
+  if (str.length > 0) {
+    for (var i = 0; i < str.length; i++) {
+        var char = str.charCodeAt(i);
+        x = ((x<<5)-x)+char;
+        x = x & x; // Convert to 32bit integer
+    }
+  }
+  return ("00000000"+(x >>> 0).toString(16)).substr(-8);
+}
 
 //----------------------------------------------------------
 // func
 //----------------------------------------------------------
+function get_tab_key(tab) {
+  return easyhash(tab.title) + easyhash(tab.url);
+}
+
 function get_top10_from_2array(arr, arr2, count, inverse) {
   var len = arr.length
   if (len >= count) {
@@ -170,6 +185,7 @@ function std_tab(tab) {
   console.assert(tab.favIconUrl, "tab.favIconUrl is nil", tab);
 
   return {
+    id: tab.id,
     favIconUrl: tab.favIconUrl,
     title: tab.title,
     url: tab.url
@@ -267,6 +283,7 @@ function collect_tabs(remove, ...queryTabResults) {
   get_results((res)=>{
     var tabs = res[0];
     var closeIds = []
+    var cache = {};
 
     tabs = tabs.map(function (tab) {
       if (!check_close_exclude(tab)) {
@@ -275,9 +292,22 @@ function collect_tabs(remove, ...queryTabResults) {
       if (check_log_exclude(tab)) {
         return null;
       }
-      return std_tab(tab);
+      var tab2 = std_tab(tab);
+      return tab2;
     });
-    tabs = tabs.filter((v)=>(!!v))
+
+    // (v)=>(!!v)
+    tabs = tabs.filter(function (tab2) {
+      if (!tab2) return false;
+
+      var key = get_tab_key(tab2)
+      if (cache[key]) {
+        closeIds.push(tab2.id)
+        return false;
+      }
+      cache[key] = true;  
+      return true;
+    })
 
     // prepare bg data for create popup.html
     var session = {
