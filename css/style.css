@@ -1,18 +1,12 @@
 :root {
-  --primary-color: rgba(100, 100, 100, 0.7);
+  --primary-color: rgba(32, 32, 32, 0.7);
+  --bg-color: rgba( 100, 106, 106, 0.7);
   --overlay-color: rgba(32, 32, 32, 0.7);
-  --bg-color: rgba(255, 255, 255, 0.1);
-  --fg-color: white;
+  
+  /* --primary-color:red; */
+  /* --overlay-color: red; */
+  /* --bg-color: yellow; */
 
-
-  /*--bg-color: rgba(24,39,51,0.85);*/
-  /*--fg-color: rgba(20, 93, 160, 0.1);*/
-  /*--fg-color: green;*/
-  /*--bg-color: red;*/
-
-
-
-  var(--primary-color);
   --menu-speed: 850ms;
 }
 
@@ -58,7 +52,8 @@ body {
 
 .header-inner button{
   font-size: 20px;
-  padding: 0.5em;
+  padding: 0.3em 0.7em 0.3em 0.5em;
+  margin-right: 0.5rem;
 }
 
 .container {
@@ -72,7 +67,7 @@ body {
   display: inline-block;
   border: none;
   background-color: var(--bg-color);
-  color: var(--fg-color);
+  color: inherit;
   margin-top: 1rem;
   text-decoration: none;
   transition: opacity 200ms ease-in;
@@ -80,6 +75,7 @@ body {
 
 .btn:hover {
   opacity: 0.5;
+  cursor: pointer;
 }
 
 

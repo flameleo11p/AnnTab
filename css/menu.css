@@ -11,8 +11,8 @@
   right: 0;
   z-index: 2;  
   cursor: pointer;
-  width: 50px;
-  height: 50px;
+  width: 36px;
+  height: 36px;
   opacity: 0;
 }
 
@@ -23,7 +23,7 @@
   z-index: 1;
   width: 36px;
   height: 36px;
-  padding: 1rem;
+  padding: 0.7rem;
   background: var(--primary-color);
   display: flex;
   align-items: center;
@@ -145,6 +145,23 @@
   /*filter: blur(2px); */
 }
 
+
+.menu-btn {
+  display: inline-block;
+  border: none;
+  background-color: inherit;
+  color: inherit;
+  margin-top: 1rem;
+  font-size: inherit;
+  font-family: inherit;
+  text-decoration: none;
+  transition: opacity 200ms ease-in;
+}
+
+.menu-btn:hover {
+  opacity: 0.5;
+  cursor: pointer;
+}
 
 
 
