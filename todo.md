@@ -1,5 +1,29 @@
 
 ------------------
+2021-01-09 Friday
+------------------
+
+[ok] 1)
+html add refresh tips
+
+[ok] 2) change popup.html div/css
+
+[ok] 3) change menu
+css color schemel
+add onclick
+change a to div button
+add scroll to
+
+[ok] 4) add cache for filter tabs duplicate
+
+[ok] 3) page url too long crash css style
+
+[ok] 4) git comit one by one in plan
+
+5) chrome ext <zip manager>
+add queue
+
+------------------
 2021-01-08 Friday
 ------------------
 

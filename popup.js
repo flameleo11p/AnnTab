@@ -156,6 +156,7 @@ function createPage(tab) {
   }
 
   var input = document.createElement('input');
+  input.classList.add('hidden-input')
   input.readOnly = true;
   input.value = tab.url;
   input.style.width = Math.min(input.value.length, 20) + "ch";
@@ -279,18 +280,18 @@ function create_session(arr_session, bg_key) {
 
 }
 
-function create_separate_line() {
+function create_separate(num = 1) {
   var history = document.querySelector('.history');
 
   var tabs_layout = document.createElement('div');
-  tabs_layout.classList.add('tabs-layout')
+  tabs_layout.classList.add('separate-layout')
 
-  var line = document.createElement('div');
-  line.classList.add('line')
-
-
-
-  tabs_layout.appendChild(line);
+  for (var i = 1; i <= num; i++) {
+    var line = document.createElement('div');
+    line.classList.add('line')
+    tabs_layout.appendChild(line);
+  }
+  
   history.appendChild(tabs_layout);
 }
 
@@ -308,7 +309,7 @@ function reload_tabs() {
 
   if (count2 > 0) {
     print("[debug] render last_arr_session", count2)
-    create_separate_line()
+    create_separate(1)
     create_session(bg.last_arr_session, "last_arr_session")
   }
 }
