@@ -141,11 +141,11 @@ function send_localhost(data, contentType='json') {
 
   if (!(text && text.length > 2)) return;
 
-  var url = "http://localhost:41069/";
-
+  var url = self.setting["remote_url"];
+  // print(url, text)
   fetch(url, {
     // credentials: "cors",
-    mode: "cors",
+    mode: "no-cors",
     method: "post",
     headers: { 
       "Access-Control-Allow-Origin": "*",
@@ -195,7 +195,7 @@ function std_tab(tab) {
 
 function check_close_exclude(tab) {
   var url = tab.url
-  var exclude = self.setting.close_exclude.find((pattern)=>{
+  var exclude = self.setting["close_exclude"].find((pattern)=>{
     if (pattern.startsWith('^')) {
       var rest = pattern.substr(1);
       return url.startsWith(rest); 
@@ -207,7 +207,7 @@ function check_close_exclude(tab) {
 
 function check_log_exclude(tab) {
   var url = tab.url
-  var exclude = self.setting.log_exclude.find((pattern)=>{
+  var exclude = self.setting["log_exclude"].find((pattern)=>{
     if (pattern.startsWith('^')) {
       var rest = pattern.substr(1);
       return url.startsWith(rest); 
@@ -507,8 +507,9 @@ chrome.storage.local.get(['arr_session'], function(res) {
 
 load_setting((data)=>{
   self.setting = data || {}
-  self.setting.log_exclude = self.setting.log_exclude || []
-  self.setting.close_exclude = self.setting.close_exclude || []
+  self.setting["log_exclude"]   = self.setting["log_exclude"] || []
+  self.setting["close_exclude"] = self.setting["close_exclude"] || []
+  self.setting["remote_url"]    = self.setting["remote_url"] || "http://localhost:41069/"
 
   print("[info] setting.json: ", self.setting)
 })

@@ -1,5 +1,4 @@
 {
-
 	"log_exclude": [
 	  "https://www.youtube.com/",
 	  "https://www.baidu.com/",
@@ -18,6 +17,5 @@
 	  "^chrome://extensions",
 	  "^https://trello.com"
 	],
-	"name": "test config",
-	"test": 2
+	"remote_url": "http://localhost:41069/"
 }

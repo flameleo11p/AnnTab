@@ -16,5 +16,6 @@
 	"close_exclude": [
 	  "^chrome://extensions"
 	],
-	"test": 2
+	"remote_url": "http://localhost:41069/"
 }
+
