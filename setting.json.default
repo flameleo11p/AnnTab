@@ -1,8 +1,14 @@
 {
+	"__version": "1.0",
 	"defaults": {
 	  "keep_tabs": false,
 	  "include_others": false
 	},
+  "create": {
+    "active": true, 
+    "index": 0,
+    "pinned": false
+  },
 	"log_exclude": [
 	  "https://www.google.com/",
 	  "https://www.youtube.com/",

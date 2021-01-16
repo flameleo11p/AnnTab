@@ -1,4 +1,13 @@
 {
+	"defaults": {
+	  "keep_tabs": false,
+	  "include_others": false
+	},	
+  "create": {
+    "active": false, 
+    "index": 0,
+    "pinned": false
+  },
 	"log_exclude": [
 	  "https://www.youtube.com/",
 	  "https://www.baidu.com/",
@@ -14,7 +23,9 @@
 	  "chrome://extensions/"
 	],
 	"close_exclude": [
+		"^https://wx2.qq.com/",
 	  "^chrome://extensions",
+	  "^https://www.google.co.jp/search",
 	  "^https://trello.com"
 	],
 	"remote_url": "http://localhost:41069/"

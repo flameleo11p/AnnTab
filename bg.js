@@ -95,6 +95,30 @@ function get_top10_from_2array(arr, arr2, count, inverse) {
   return arr.concat(arr2.slice(0, remain));
 }
 
+function load_url(url) {
+  return new Promise((resolve, reject)=>{
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState !=4) {
+        return 
+      }      
+      // var str = xhr.response;
+      var res = "";
+      if (xhr.status == 200) {
+        res = xhr.response;
+      }
+      resolve(res);
+    }
+
+    xhr.open("GET", url);
+    xhr.send()    
+  })
+}
+
+function get_str_head(str, n) {
+  return str.substring(0, 100);
+}
+
 function parse_json(str) {
   var data;
   try {
@@ -108,21 +132,27 @@ function parse_json(str) {
 }
 
 function load_setting(callback) {
-  var xhr = new XMLHttpRequest();
-  xhr.onreadystatechange = function () {
-    if (xhr.readyState !=4) {
-      // readyState from 1-4 ok
-      // print(xhr.statusText, xhr)
-      return 
-    }
-    var str = xhr.response;
-    var data = parse_json(str)
-    callback(data);
-  }
-  xhr.open("GET", chrome.extension.getURL("/setting.json"), true);
-  xhr.send()
-}
+  var queue = [
+    load_url(chrome.extension.getURL("/setting.json.default")),
+    load_url(chrome.extension.getURL("/setting.json"))
+  ];
 
+  var proc = function (res) {
+    var setting_default = parse_json(res[0]|| "") || {};
+    var setting_user    = parse_json(res[1]|| "") || {};
+    var config = Object.assign({}, setting_default, setting_user);
+    // print("[debug] mix setting:", config)
+    callback(config)
+  }
+
+  Promise.resolve(Promise.all(queue))
+  .then(function (res) {
+    proc(res)
+  })
+  .catch(function (err) {
+    console.error("[error] enum_tabs failed !", err);
+  });
+}
 
 function send_localhost(data, contentType='json') {
   var text;
@@ -321,8 +351,14 @@ function collect_tabs(remove, ...queryTabResults) {
     }
     bg.last_arr_session = bg.last_arr_session || []
 
+    // todo if already exists
     // show result popup.html (popup.js)
-    chrome.tabs.create({ url: 'popup.html' })
+    let createProperty = Object.assign({}, self.setting["create"], {
+      url: 'popup.html'
+    });
+    // print("[debug]", createProperty, self.setting["create"])
+
+    chrome.tabs.create(createProperty)
 
     // close tabs
     if (remove) {
@@ -507,10 +543,10 @@ chrome.storage.local.get(['arr_session'], function(res) {
 
 load_setting((data)=>{
   self.setting = data || {}
-  self.setting["log_exclude"]   = self.setting["log_exclude"] || []
-  self.setting["close_exclude"] = self.setting["close_exclude"] || []
-  self.setting["remote_url"]    = self.setting["remote_url"] || "http://localhost:41069/"
+  // self.setting["log_exclude"]   = self.setting["log_exclude"] || []
+  // self.setting["close_exclude"] = self.setting["close_exclude"] || []
+  // self.setting["remote_url"]    = self.setting["remote_url"] || "http://localhost:41069/"
 
-  print("[info] setting.json: ", self.setting)
+  print("[info] mix setting: ", self.setting)
 })
 
